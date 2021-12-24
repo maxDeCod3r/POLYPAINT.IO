@@ -3,20 +3,15 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract Pixels is ERC721, Ownable {
-    using Counters for Counters.Counter;
-
-    Counters.Counter private _tokenIds;
 
     uint256 public _gridsize = 1000;
     uint256 public _totalPixels = _gridsize * _gridsize;
     uint256 public _pixelPrice = 250000000000000; // approx 1usd
 
-    mapping(uint256 => string) _pixelColours;
-    // string[] _pixelColours = new string[](_totalPixels);
-    mapping(uint256 => bool) _pixelOwned;
+    mapping(uint256 => string) public _pixelColours;  // No need to be public, we have safe getters
+    mapping(uint256 => bool) public _pixelOwned;  // No need to be public, we have safe getters
 
     constructor() ERC721("Pixels", "PIX") {}
 
@@ -43,7 +38,6 @@ contract Pixels is ERC721, Ownable {
     //function change pixel colour |||ERC721.ownerOf(tokenId)
     function changePixelColor(uint256 _pixelId, string memory _colorHex) external {
         require(_pixelId < _totalPixels, "Pixel id out of range");
-        require(_pixelOwned[_pixelId], "Pixel is not owned");
         require(ownerOf(_pixelId) == msg.sender, "Sender is not Pixel owner"); //TODO:is this correct?
         require(bytes(_colorHex).length <= 6, "Invalid color, needs to be in HEX format (without the #)");
         _pixelColours[_pixelId] = _colorHex;
@@ -59,9 +53,18 @@ contract Pixels is ERC721, Ownable {
         }
     }
 
-    function getDebugPixelColour(uint256 _pixelId) public view returns (string memory) {
-            return _pixelColours[_pixelId];
+    function isPixelOwned(uint256 _pixelId) public view returns (bool) {
+        require(_pixelId < _totalPixels, "Pixel id out of range");
+        return _pixelOwned[_pixelId];
     }
+
+    // function getAll_f() public view returns (string[] memory){  NOTE: We cannot do this because (blah blah blah, no keys but value is in sha3 memory of the key) solidity is difficult and the best wah is to sequentially query the values.....
+    //     string[] memory ret = new string[](_totalPixels);
+    //     for (uint i = 0; i < _totalPixels; i++) {
+    //         ret[i] = _pixelColours[i];
+    //     }
+    //     return ret;
+    // }
 
     // function getAllPixelColours() public view returns (string[] memory) {
     //     return _pixelColours;
