@@ -65,11 +65,6 @@ async function subscribeToTopic(web3_instance) {
 run_blockchain_mirror()
 
 
-
-app.get("/api", (req, res) => {
-    res.json({ message: "Hello from server!" });
-});
-
 app.get("/pixel_data", (req, res) => {
     res.json({ success: true, data: CACHED_DATABASE });
 })
