@@ -10,8 +10,11 @@ contract Pixels is ERC721, Ownable {
     uint256 public _totalPixels = _gridsize * _gridsize;
     uint256 public _pixelPrice = 250000000000000; // approx 1usd
 
-    mapping(uint256 => string) public _pixelColours;  // No need to be public, we have safe getters
+    mapping(uint256 => bytes3) public _pixelColours;  // No need to be public, we have safe getters
     mapping(uint256 => bool) public _pixelOwned;  // No need to be public, we have safe getters
+
+    event PixelMinted (uint date, address to, uint256 pixelId);
+    event PixelColourChanged ( address owner, bytes3 newColour, uint256 pixelId );
 
     constructor() ERC721("Pixels", "PIX") {}
 
@@ -22,8 +25,9 @@ contract Pixels is ERC721, Ownable {
         // require that some money be sent
         uint _id = _pixelId;
         _pixelOwned[_pixelId] = true;
-        _pixelColours[_pixelId] = "777777";
+        _pixelColours[_pixelId] = 0x777777;
         _safeMint(msg.sender, _id);
+        emit PixelMinted(block.timestamp, msg.sender, _pixelId);
     }
 
     function getBalance() public view returns(uint256){
@@ -36,20 +40,21 @@ contract Pixels is ERC721, Ownable {
      }
 
     //function change pixel colour |||ERC721.ownerOf(tokenId)
-    function changePixelColor(uint256 _pixelId, string memory _colorHex) external {
+    function changePixelColor(uint256 _pixelId, bytes3 _colorHex) external {
         require(_pixelId < _totalPixels, "Pixel id out of range");
-        require(ownerOf(_pixelId) == msg.sender, "Sender is not Pixel owner"); //TODO:is this correct?
-        require(bytes(_colorHex).length <= 6, "Invalid color, needs to be in HEX format (without the #)");
+        require(ownerOf(_pixelId) == msg.sender, "Sender is not Pixel owner");
         _pixelColours[_pixelId] = _colorHex;
-        //Optional emit Event here...
+        emit PixelColourChanged(msg.sender, _colorHex, _pixelId);
+        // require(_colorHex.length <= 6, "Invalid color, needs to be in HEX format (without the #)");
+        //Optional emit Event here... //NOTE: If we subscribe to the emitter we do not need to constantly query the blockchain datahbase and keep a shadowCache on a centralised database
     }
 
-    function getPixelColour(uint256 _pixelId) public view returns (string memory) {
+    function getPixelColour(uint256 _pixelId) public view returns (bytes3) {
         require(_pixelId < _totalPixels, "Pixel id out of range");
         if(_pixelOwned[_pixelId]) {
             return _pixelColours[_pixelId];
         } else {
-            return "333333";
+            return 0x000001;
         }
     }
 
@@ -57,17 +62,4 @@ contract Pixels is ERC721, Ownable {
         require(_pixelId < _totalPixels, "Pixel id out of range");
         return _pixelOwned[_pixelId];
     }
-
-    // function getAll_f() public view returns (string[] memory){  NOTE: We cannot do this because (blah blah blah, no keys but value is in sha3 memory of the key) solidity is difficult and the best wah is to sequentially query the values.....
-    //     string[] memory ret = new string[](_totalPixels);
-    //     for (uint i = 0; i < _totalPixels; i++) {
-    //         ret[i] = _pixelColours[i];
-    //     }
-    //     return ret;
-    // }
-
-    // function getAllPixelColours() public view returns (string[] memory) {
-    //     return _pixelColours;
-    // }
-
 }
