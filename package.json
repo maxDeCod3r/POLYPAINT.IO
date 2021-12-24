@@ -21,6 +21,12 @@
     },
     "homepage": "https://github.com/maxDeCod3r/POLYPAINT.IO#readme",
     "dependencies": {
-        "express": "^4.17.2"
+        "@openzeppelin/contracts": "^4.4.1",
+        "express": "^4.17.2",
+        "firebase": "^9.6.1",
+        "firebase-admin": "^10.0.1",
+        "truffle-hdwallet-provider": "^1.0.17",
+        "truffle-plugin-verify": "^0.5.20",
+        "web3": "^1.6.1"
     }
 }

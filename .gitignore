@@ -264,6 +264,6 @@ package-lock.json
 # End of https://www.toptal.com/developers/gitignore/api/macos,solidity,soliditytruffle,react,node
 
 .env
-.secrets
-.secrets/
-.secrets/*
+secrets
+secrets/
+secrets/*
