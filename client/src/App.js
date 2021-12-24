@@ -58,48 +58,31 @@ class App extends Component {
 
 
     render() {
-        return ( <
-                div className = "App" >
-                <
-                nav className = "container" >
-                <
-                h1 style = {
-                    { color: 'white' }
-                } >
-                Hello World!
-                <
-                /h1> {
-                (() => {
-                    if (this.state.connect_button_visibility) {
-                        return ( < button id = "connect_wallet"
-                            className = "btn btn-block btn-primary"
-                            onClick = {
-                                () => { this.loadBlockchainData() }
-                            } > Connect wallet < /button>
-                        );
-                    } else {
-                        return ( <
-                            div >
-                            <
-                            p style = {
-                                { color: 'white' }
-                            } >
-                            Account: { this.state.account } <
-                            /p> <
-                            p style = {
-                                { color: 'white' }
-                            } >
-                            Network: { this.state.network } <
-                            /p> < /
-                            div >
-                        )
-                    }
-                })()
-            } <
-            /nav> < /
-        div >
+        return (
+        <div className = "App" >
+          <nav className = "container" >
+            <h1 style = {{ color: 'white' }} >Hello World!</h1>
+            {(() => {
+              if (this.state.connect_button_visibility) {
+                return (
+                  <button id = "connect_wallet"
+                    className = "btn btn-block btn-primary"
+                    onClick = {() => { this.loadBlockchainData() }
+                } > Connect wallet </button>);
+              } else {
+                return (
+                  <div>
+                    <p style = {{ color: 'white' }}>
+                      Account: { this.state.account }
+                    </p>
+                    <p style = {{ color: 'white' }}>
+                      Network: { this.state.network }
+                    </p>
+                  </div>)}})()}
+            </nav>
+          </div>
     );
-};
+  };
 }
 
 export default App;
