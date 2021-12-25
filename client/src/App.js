@@ -13,14 +13,21 @@ class App extends Component {
             window.web3 = new Web3(window.web3.currentProvider)
             this.setState({ web3_enabled: true })
         } else {
-            window.alert("Non ethereum browser detected, cannot access Metamask")
+            window.alert("Non Web3 browser detected, cannot access Metamask")
         }
     }
 
-    async testApiCall() {
-        fetch("/api")
+    async updatePixelData() {
+        fetch("/pixel_data")
             .then((res) => res.json())
-            .then((data) => console.log(data));
+            .then((data) => {
+              this.setState({grid: data.data})
+              console.log(this.state.grid);
+            });
+    }
+
+    async updatePixelGrid() {
+      // infinite loop to update pixel data every n seconds
     }
 
     async loadBlockchainData() {
@@ -41,7 +48,7 @@ class App extends Component {
     }
 
     async componentDidMount() {
-        await this.testApiCall()
+        await this.updatePixelData()
             // this.loadBlockchainData()
     }
 
@@ -58,6 +65,8 @@ class App extends Component {
 
 
     render() {
+      const colorArray = ["#FF6C11", "#FF6C11", "#FF6C11", "#FF6C11", "#FF6C11"];
+
         return (
         <div className = "App" >
           <nav className = "container" >
