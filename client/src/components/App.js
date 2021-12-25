@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import "../styles/App.scss";
+import "../styles/App.css";
 import Web3 from 'web3'
 import PixelGrid from "react-pixel-grid";
 
@@ -29,15 +29,12 @@ class App extends Component {
                   updatedArray[key] = value
                 }
               }
-              console.log(downloadedArray);
               let newArray = []
               updatedArray.forEach(piece => {
                   const cleanColor = piece.replace('0x', '#');
                   newArray.push(cleanColor);
                 });
               this.setState({grid: newArray})
-              console.log(this.state.grid);
-              console.log(this.state.grid.length);
             });
     }
 
@@ -78,7 +75,7 @@ class App extends Component {
         }
         var empty_arr = []
         for (let i = 0; i < 1000000; i++) {
-          empty_arr.push("0x550077")
+          empty_arr.push("0x007700")
         }
         this.state.grid = empty_arr
     }
@@ -92,12 +89,11 @@ class App extends Component {
       return tmp;
   }
 
-
     render() {
         return (
         <div className = "App" >
-          <nav className = "container" >
-            <h1 style = {{ color: 'white' }} >Hello World!</h1>
+          {/* <nav className = "container" >
+            <h1 style = {{ color: 'black' }} >Hello World!</h1>
             {(() => {
               if (this.state.connect_button_visibility) {
                 return (
@@ -115,14 +111,40 @@ class App extends Component {
                       Network: { this.state.network }
                     </p>
                   </div>)}})()}
-            </nav>
-            {/* <PixelGrid data={this.splitArray(this.state.grid, 10)} */}
-            <PixelGrid data={this.splitArray(this.state.grid, this.state.grid.length ** 0.5)}
+            </nav> */}
+            {/* <div className="canvas">
+            {this.state.grid.map((color, key) => {
+              return(
+                <div className="pixel" style={{backgroundColor: color}}></div>
+                )
+                    })}
+            </div> */}
+
+            {/* <PixelGrid data={this.splitArray(this.state.grid, this.state.grid.length ** 0.5)}
             options={{
               size: 1,
               padding: 0,
               background: [0, 0.5, 1],
-            }} />
+            }} /> */}
+
+            {/* <svg width={this.state.grid.length ** 0.5} height={this.state.grid.length ** 0.5}>
+              {this.state.grid.map((color, key) => {
+                let size = this.state.grid.length ** 0.5
+                const rowId = Math.floor(key/size);
+                const colId = key % size;
+                return(
+                  <rect x={colId} y={rowId} width={1} height={1} style={{fill: color}}/>
+                  )
+                  })}
+            </svg> */}
+
+            <canvas
+              id="canvas"
+              width={500}
+              height={500}
+              style={{border: '2px solid #000', marginTop: 10}}>
+
+              </canvas>
           </div>
     );
   };
