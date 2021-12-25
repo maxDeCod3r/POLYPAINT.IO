@@ -13,6 +13,7 @@
         "react": "^17.0.2",
         "react-bootstrap": "^2.0.4",
         "react-dom": "^17.0.2",
+        "react-pixel-grid": "^0.1.2",
         "react-scripts": "4.0.3",
         "truffle": "^5.4.26",
         "truffle-hdwallet-provider": "^1.0.17",

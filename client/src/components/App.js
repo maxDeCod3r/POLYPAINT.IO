@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import './App.css';
+import "../styles/App.scss";
 import Web3 from 'web3'
+import PixelGrid from "react-pixel-grid";
 
 class App extends Component {
 
@@ -21,8 +22,22 @@ class App extends Component {
         fetch("/pixel_data")
             .then((res) => res.json())
             .then((data) => {
-              this.setState({grid: data.data})
+              var updatedArray = this.state.grid
+              var downloadedArray = data.data
+              for (const [key, value] of Object.entries(downloadedArray)) {
+                if (key >= 0) {
+                  updatedArray[key] = value
+                }
+              }
+              console.log(downloadedArray);
+              let newArray = []
+              updatedArray.forEach(piece => {
+                  const cleanColor = piece.replace('0x', '#');
+                  newArray.push(cleanColor);
+                });
+              this.setState({grid: newArray})
               console.log(this.state.grid);
+              console.log(this.state.grid.length);
             });
     }
 
@@ -61,12 +76,24 @@ class App extends Component {
             connect_button_visibility: true,
             grid: [],
         }
+        var empty_arr = []
+        for (let i = 0; i < 1000000; i++) {
+          empty_arr.push("0x550077")
+        }
+        this.state.grid = empty_arr
     }
 
 
-    render() {
-      const colorArray = ["#FF6C11", "#FF6C11", "#FF6C11", "#FF6C11", "#FF6C11"];
+    splitArray(array, part) {
+      var tmp = [];
+      for(var i = 0; i < array.length; i += part) {
+          tmp.push(array.slice(i, i + part));
+      }
+      return tmp;
+  }
 
+
+    render() {
         return (
         <div className = "App" >
           <nav className = "container" >
@@ -81,14 +108,21 @@ class App extends Component {
               } else {
                 return (
                   <div>
-                    <p style = {{ color: 'white' }}>
+                    <p style = {{ color: 'grey' }}>
                       Account: { this.state.account }
                     </p>
-                    <p style = {{ color: 'white' }}>
+                    <p style = {{ color: 'grey' }}>
                       Network: { this.state.network }
                     </p>
                   </div>)}})()}
             </nav>
+            {/* <PixelGrid data={this.splitArray(this.state.grid, 10)} */}
+            <PixelGrid data={this.splitArray(this.state.grid, this.state.grid.length ** 0.5)}
+            options={{
+              size: 1,
+              padding: 0,
+              background: [0, 0.5, 1],
+            }} />
           </div>
     );
   };
