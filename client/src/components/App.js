@@ -92,7 +92,7 @@ class App extends Component {
     render() {
         return (
         <div className = "App" >
-          {/* <nav className = "container" >
+          <nav className = "container" >
             <h1 style = {{ color: 'black' }} >Hello World!</h1>
             {(() => {
               if (this.state.connect_button_visibility) {
@@ -111,40 +111,10 @@ class App extends Component {
                       Network: { this.state.network }
                     </p>
                   </div>)}})()}
-            </nav> */}
-            {/* <div className="canvas">
-            {this.state.grid.map((color, key) => {
-              return(
-                <div className="pixel" style={{backgroundColor: color}}></div>
-                )
-                    })}
-            </div> */}
+            </nav>
+            <img src="/pixel_data.png" alt="THE_MAP" width="1000" height="1000"/>
 
-            {/* <PixelGrid data={this.splitArray(this.state.grid, this.state.grid.length ** 0.5)}
-            options={{
-              size: 1,
-              padding: 0,
-              background: [0, 0.5, 1],
-            }} /> */}
 
-            {/* <svg width={this.state.grid.length ** 0.5} height={this.state.grid.length ** 0.5}>
-              {this.state.grid.map((color, key) => {
-                let size = this.state.grid.length ** 0.5
-                const rowId = Math.floor(key/size);
-                const colId = key % size;
-                return(
-                  <rect x={colId} y={rowId} width={1} height={1} style={{fill: color}}/>
-                  )
-                  })}
-            </svg> */}
-
-            <canvas
-              id="canvas"
-              width={500}
-              height={500}
-              style={{border: '2px solid #000', marginTop: 10}}>
-
-              </canvas>
           </div>
     );
   };
