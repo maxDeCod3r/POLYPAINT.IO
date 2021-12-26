@@ -26,7 +26,7 @@ var database = firebase_admin.database();
 var PIXEL_TABLE = database.ref("Pixels");
 var CACHED_DATABASE = []
 for (let i = 0; i < 1000000; i++) {
-    CACHED_DATABASE.push(0x007700)
+    CACHED_DATABASE.push(0x2C2E43)
 }
 
 async function downloadDatabase() {
@@ -37,8 +37,8 @@ async function downloadDatabase() {
                 CACHED_DATABASE[key] = parseInt(value)
             }
         }
-        // CACHED_DATABASE = snapshot.val();
         console.log("Initial database download complete");
+        updatePng(true)
     });
 }
 
@@ -84,14 +84,8 @@ function splitArray(array, part) {
     return tmp;
 }
 
-function injectTransparency(arr) {
-    arr.forEach(element => {
-
-    });
-}
-
-async function updatePng() {
-    if (DB_HAS_CHANGED) {
+async function updatePng(override = false) {
+    if (DB_HAS_CHANGED || override) {
         console.log('updating image');
         image_grid = splitArray(CACHED_DATABASE, 1000)
         createPng(image_grid)

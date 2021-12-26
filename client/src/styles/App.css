@@ -25,7 +25,7 @@
 } */
 
 body {
-    background: #333;
+    background: rgb(178, 177, 185) !important;
     display: flex;
     justify-content: center;
     align-items: center;

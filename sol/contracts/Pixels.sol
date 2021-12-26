@@ -14,10 +14,14 @@ contract Pixels is ERC721, Ownable {
     mapping(uint256 => bytes3) public _pixelColours;
     mapping(uint256 => bool) public _pixelOwned;
 
-    event PixelMinted (uint date, address to, uint256 pixelId);
+    event PixelMinted (uint date, address indexed to, uint256 pixelId);
     event PixelColourChanged ( address owner, bytes3 newColour, uint256 pixelId );
 
     constructor() ERC721("Pixels", "PIX") {}
+
+    function setTokenPrice(uint256 _newPrice) external onlyOwner {
+        _pixelPrice = _newPrice;
+    }
 
     function mint(uint256 _pixelId, bytes3 _newColour) public payable {
         require(!_pixelOwned[_pixelId], "Pixel is already owned");

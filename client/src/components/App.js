@@ -18,25 +18,6 @@ class App extends Component {
         }
     }
 
-    async updatePixelData() {
-        fetch("/pixel_data")
-            .then((res) => res.json())
-            .then((data) => {
-              var updatedArray = this.state.grid
-              var downloadedArray = data.data
-              for (const [key, value] of Object.entries(downloadedArray)) {
-                if (key >= 0) {
-                  updatedArray[key] = value
-                }
-              }
-              let newArray = []
-              updatedArray.forEach(piece => {
-                  const cleanColor = piece.replace('0x', '#');
-                  newArray.push(cleanColor);
-                });
-              this.setState({grid: newArray})
-            });
-    }
 
     async updatePixelGrid() {
       // infinite loop to update pixel data every n seconds
@@ -60,8 +41,7 @@ class App extends Component {
     }
 
     async componentDidMount() {
-        await this.updatePixelData()
-            // this.loadBlockchainData()
+      this.updatePixelGrid()
     }
 
     constructor(props) {
@@ -71,23 +51,8 @@ class App extends Component {
             network: '?',
             web3_enabled: false,
             connect_button_visibility: true,
-            grid: [],
         }
-        var empty_arr = []
-        for (let i = 0; i < 1000000; i++) {
-          empty_arr.push("0x007700")
-        }
-        this.state.grid = empty_arr
     }
-
-
-    splitArray(array, part) {
-      var tmp = [];
-      for(var i = 0; i < array.length; i += part) {
-          tmp.push(array.slice(i, i + part));
-      }
-      return tmp;
-  }
 
     render() {
         return (
