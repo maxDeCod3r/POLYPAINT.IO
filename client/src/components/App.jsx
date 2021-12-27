@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import "../styles/App.css";
 import Web3 from 'web3'
 import Modal from "./Modal";
+import Pixels from '../abis/Pixels.json'
 
 
 class App extends Component {
@@ -19,17 +20,39 @@ class App extends Component {
         }
     }
 
-    async loadBlockchainData() {
+    async loadContractData() {
       await this.loadWeb3()
       if (this.state.web3_enabled) {
         const web3 = window.web3
-        const network = await web3.eth.net.getNetworkType()
+        // const network_name = await web3.eth.net.getNetworkType()
+        const network_id = await web3.eth.net.getId()
         const accounts = await web3.eth.getAccounts()
         if (accounts) {
           const account = accounts[0]
           this.setState({ account })
-          this.setState({ network })
+          this.setState({ network_id })
           this.setState({ connect_button_visibility: false })
+
+          const networkData = Pixels.networks[network_id]
+          if (networkData) {
+              const abi = Pixels.abi
+              const address = networkData.address
+              const contract = new web3.eth.Contract(abi, address)
+              this.setState({contract})
+          }
+          else {
+            try {
+              await web3.currentProvider.request({
+                method: "wallet_switchEthereumChain",
+                params: [{ chainId: "0x3" }]
+                // params: [{ chainId: "0x89" }]
+              });
+            } catch (error) {
+              alert(error.message);
+              this.setState({ web3_enabled: false })
+              window.alert("Smart contract not on the network!")
+            }
+          }
         }
       } else {
         this.setState({ account: "Non Web3 browser" })
@@ -70,8 +93,9 @@ class App extends Component {
       super(props)
       this.state = {
         account: "Connect wallet",
-        network: '?',
+        network_id: '?',
         web3_enabled: false,
+        // web3_enabled: false,
         connect_button_visibility: true,
         raw_grid: null,
         image: {source: '/pixel_data.png',hash: Date.now()},
@@ -80,6 +104,12 @@ class App extends Component {
         stats: {purchased: 0,available: 0,price: "?"},
         selected_pixel: {pixel_id: null,pixel_x: null,pixel_y: null,pixel_color: null},
         show_buyer_modal: false,
+        show_changer_modal: false,
+        buy_modal_pixels: null,
+        buy_modal_colours: null,
+        set_modal_pixels: null,
+        set_modal_colours: null,
+        contract: null,
       }
       this.onWindowResize = this.onWindowResize.bind(this)
       let window_height = window.innerHeight
@@ -89,31 +119,19 @@ class App extends Component {
 
 
 
-    handleChange(e) {
-      const target = e.target;
-      const name = target.name;
-      const value = target.value;
-
-      this.setState({
-        [name]: value
-      });
+    handle_buyer_submit(e) {
+      console.log(e);
     }
 
-    handleSubmit(e) {
-      this.setState({ name: this.state.modalInputName });
-      this.buyer_modalClose();
+    handle_setter_submit(e) {
+      console.log(e);
     }
 
-    buyer_modalOpen() {
-      this.setState({ show_buyer_modal: true });
-    }
+    buyer_modalOpen() {this.setState({ show_buyer_modal: true });}
+    setter_modalOpen() {this.setState({ show_changer_modal: true });}
 
-    buyer_modalClose() {
-      this.setState({
-        modalInputName: "",
-        show_buyer_modal: false
-      });
-    }
+    buyer_modalClose() {this.setState({show_buyer_modal: false})}
+    setter_modalClose() {this.setState({show_setter_modal: false})}
 
 
 
@@ -132,23 +150,47 @@ class App extends Component {
         return (
           <div className = "App" >
 
-
-            <Modal show={this.state.show_buyer_modal} handleClose={e => this.buyer_modalClose(e)}>
-              <h2>Hello Modal</h2>
-              <div className="form-group">
-                <label>Enter Name:</label>
-                <input
-                  type="text"
-                  value={this.state.modalInputName}
-                  name="modalInputName"
-                  onChange={e => this.handleChange(e)}
-                  className="form-control"
-                />
+            <Modal show={this.state.show_buyer_modal}>
+              <div className="main-modal">
+                <b>Buy blocks</b>
+                <div className="modal-form-group">
+                  <input type="text"
+                    id="buy_block_ids"
+                    placeholder="Block id(s): 500,501,502"
+                    onChange={ (e)  => {this.setState({buy_modal_pixels: e.target.value})}}
+                    name="modalInputName"/>
+                  <input type="text"
+                    id="buy_colour_ids"
+                    placeholder="Block colours(s): 0x111111,0x2222220,333333"
+                    onChange={ (e)  => {this.setState({buy_modal_colours: e.target.value})}}
+                    name="modalInputName"/>
+                </div>
+                <div className="modal-button-row">
+                  <button className='modal-button modal-submit' onClick={e => this.handle_buyer_submit(e)} type="button">Buy</button>
+                  <button className="modal-button modal-close" onClick={e => this.buyer_modalClose(e)}><i className="fas fa-times"></i></button>
+                </div>
               </div>
-              <div className="form-group">
-                <button onClick={e => this.handleSubmit(e)} type="button">
-                  Save
-                </button>
+          </Modal>
+
+          <Modal show={this.state.show_changer_modal}>
+              <div className="main-modal">
+                <b>Change blocks</b>
+                <div className="modal-form-group">
+                  <input type="text"
+                    id="buy_block_ids"
+                    placeholder="Block id(s): 500,501,502"
+                    onChange={ (e)  => {this.setState({set_modal_pixels: e.target.value})}}
+                    name="modalInputName"/>
+                  <input type="text"
+                    id="buy_colour_ids"
+                    placeholder="Block colours(s): 0x111111,0x2222220,333333"
+                    onChange={ (e)  => {this.setState({set_modal_colours: e.target.value})}}
+                    name="modalInputName"/>
+                </div>
+                <div className="modal-button-row">
+                  <button className='modal-button modal-submit' onClick={e => this.handle_setter_submit(e)} type="button">Buy</button>
+                  <button className="modal-button modal-close" onClick={e => this.setter_modalClose(e)}><i className="fas fa-times"></i></button>
+                </div>
               </div>
           </Modal>
 
@@ -188,7 +230,7 @@ class App extends Component {
               {(() => {
                 if (this.state.connect_button_visibility) {
                   return (
-                  <div className = "side-box blue-box right-correction clickable-box" onClick = {() => {this.loadBlockchainData()}}><b>Connect Wallet</b></div>
+                  <div className = "side-box blue-box right-correction clickable-box" onClick = {() => {this.loadContractData()}}><b>Connect Wallet</b></div>
                   )
                 } else {
                   return (
@@ -199,11 +241,11 @@ class App extends Component {
                 <div>
                   <div className = "side-box purple-box"
                     style = {this.state.web3_enabled ? {color: 'black', cursor: 'pointer'} : {color: 'grey'}}
-                    onClick={() => {if (this.state.web3_enabled) {this.buyer_modalOpen()}}}
-                    >
+                    onClick={() => {if (this.state.web3_enabled) {this.buyer_modalOpen()}}}>
                     <b> Buy blocks </b>
                   </div>
-                  <div className = "side-box red-box" style = {this.state.web3_enabled ? {color: 'black'} : {color: 'grey'}}>
+                  <div className = "side-box red-box" style = {this.state.web3_enabled ? {color: 'black', cursor: 'pointer'} : {color: 'grey'}}
+                  onClick={() => {if (this.state.web3_enabled) {this.buyer_modalOpen()}}}>
                     <b> Set block colours </b>
                   </div>
                 </div>

@@ -103,15 +103,68 @@ body {
     background: linear-gradient(135deg, rgba(255, 209, 246, 1) 0%, rgba(201, 255, 196, 1) 100%);
 }
 
-.modal {
-    background: rgba(0, 0, 0, 0.6);
-}
-
 .modal-container {
     position: absolute;
-    width: 60%;
-    background: #ffffff;
-    left: 25%;
+    width: 50%;
+    background: #878397;
+    left: 50%;
+    transform: translateX(-50%);
     top: 30%;
     padding: 20px;
+    text-align: center;
+}
+
+.modal-button {
+    margin: 1em;
+    margin-top: 0.5em;
+    padding: 0.2em;
+    width: 7em;
+    font-size: 3em;
+    font-family: 'Kanit', sans-serif;
+    border-radius: 50px;
+}
+
+.modal-submit {
+    border: none;
+    padding: 0.3em;
+    background: linear-gradient(313deg, rgba(170, 162, 255, 1) 0%, rgba(195, 156, 251, 1) 40%, rgba(188, 170, 251, 1) 51%, rgba(156, 234, 252, 1) 96%);
+    color: white;
+}
+
+.modal-close {
+    border: double 3px transparent;
+    background-color: transparent;
+    background-image: linear-gradient(#878397, #878397), linear-gradient(313deg, rgba(170, 162, 255, 1) 0%, rgba(195, 156, 251, 1) 40%, rgba(188, 170, 251, 1) 51%, rgba(156, 234, 252, 1) 96%);
+    background-origin: border-box;
+    background-clip: content-box, border-box;
+    color: white;
+}
+
+.modal-button-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    align-content: stretch;
+}
+
+.modal-form-group {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.modal-form-group input {
+    display: block;
+    width: 60%;
+    margin: 1em auto;
+    padding: 0.5em 1em 0.5em 1em;
+    font-size: 1.3em;
+    border-radius: 30px;
+    border: none;
+}
+
+.main-modal b {
+    font-family: 'Kanit', sans-serif;
+    font-size: 3em;
 }
