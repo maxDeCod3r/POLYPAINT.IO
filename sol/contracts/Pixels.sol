@@ -38,12 +38,14 @@ contract Pixels is ERC721, Ownable {
         mint(_pixelId, 0x111111);
     }
 
-    function mintMultiple(uint256[] memory _pixelIds) external payable {
+    function mintMultiple(uint256[] memory _pixelIds, bytes3[] memory _newColours) public payable {
         require(msg.value >= _pixelIds.length * _pixelPrice, "No/ Insufficient fees provided");
+        require(_pixelIds.length == _newColours.length, "Arrays of inconsistent length");
         for (uint256 i = 0; i < _pixelIds.length; i++) {
-            mint(_pixelIds[i], 0x111111);
+            mint(_pixelIds[i], _newColours[i]);
         }
     }
+
 
     function getBalance() public view returns(uint256){
         return address(this).balance;
@@ -55,17 +57,17 @@ contract Pixels is ERC721, Ownable {
      }
 
     //function change pixel colour |||ERC721.ownerOf(tokenId)
-    function changePixelColor(uint256 _pixelId, bytes3 _colorHex) public {
+    function changePixelColor(uint256 _pixelId, bytes3 _newColour) public {
         require(_pixelId < _totalPixels, "Pixel id out of range");
         require(ownerOf(_pixelId) == msg.sender, "Sender is not Pixel owner");
-        _pixelColours[_pixelId] = _colorHex;
-        emit PixelColourChanged(msg.sender, _colorHex, _pixelId);
+        _pixelColours[_pixelId] = _newColour;
+        emit PixelColourChanged(msg.sender, _newColour, _pixelId);
     }
 
-    function changePixelColorMultiple(uint256[] memory _pixelIds, bytes3[] memory _colorsHex) external {
-        require(_pixelIds.length == _colorsHex.length, "Arrays of inconsistent length");
+    function changePixelColorMultiple(uint256[] memory _pixelIds, bytes3[] memory _newColours) external {
+        require(_pixelIds.length == _newColours.length, "Arrays of inconsistent length");
         for (uint256 i = 0; i < _pixelIds.length; i++) {
-            changePixelColor(_pixelIds[i], _colorsHex[i]);
+            changePixelColor(_pixelIds[i], _newColours[i]);
         }
     }
 

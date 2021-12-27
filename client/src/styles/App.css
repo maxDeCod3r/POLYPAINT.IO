@@ -1,32 +1,104 @@
-/* .App {
-    padding: 50px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: gray;
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
 }
-
-.artwork {
-    display: flex;
-    padding-bottom: 50px;
-    justify-content: center;
-    align-items: center;
-}
-
-.row {
-    display: flex;
-}
-
-.pixel {
-    height: 25px;
-    width: 25px;
-    margin: 2px;
-    float: left;
-} */
 
 body {
-    background: rgb(178, 177, 185) !important;
-    display: flex;
+    background: rgba(131, 148, 160, 1) !important;
     justify-content: center;
     align-items: center;
+    height: 100%;
+    width: 100%;
+    margin: 0px;
+    max-height: 100vh;
+}
+
+.content-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    /* flex-wrap: wrap; */
+    justify-content: center;
+    align-items: stretch;
+    align-content: stretch;
+    /* column-gap: 20px; */
+    height: 100vh;
+    width: 100%;
+}
+
+.column {
+    width: 15%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.column-img {
+    width: 100vh;
+    height: 100vh;
+}
+
+.column img {
+    width: 100vh;
+    height: 100vh;
+}
+
+.column-separator {
+    width: 7px;
+    background-color: white;
+}
+
+.side-box {
+    border: 7px solid white;
+    border-radius: 30px;
+    padding: 0.3em 0em 0.3em 0em;
+    margin: 1em 1em 1em 1em;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.big-box {
+    padding: 0.5em;
+    padding-left: 1em;
+    text-align: left;
+}
+
+.right-correction {
+    margin-bottom: 6.5em;
+}
+
+.side-box b {
+    font-family: 'Kanit', sans-serif;
+    font-size: x-large;
+}
+
+.side-box p {
+    font-family: 'Kanit-extralight', sans-serif;
+    font-size: large;
+    margin-bottom: 0;
+}
+
+.clickable-box {
+    cursor: pointer;
+}
+
+.blue-box {
+    background: linear-gradient(135deg, rgba(234, 236, 255, 1) 0%, rgba(196, 202, 255, 1) 100%);
+}
+
+.purple-box {
+    background: linear-gradient(135deg, rgba(248, 234, 255, 1) 0%, rgba(217, 196, 255, 1) 100%);
+}
+
+.red-box {
+    background: linear-gradient(135deg, rgba(255, 196, 226, 1) 0%, rgba(255, 234, 244, 1) 100%);
+}
+
+.green-box {
+    background: linear-gradient(135deg, rgba(237, 255, 234, 1) 0%, rgba(201, 255, 196, 1) 100%);
+}
+
+.special-box {
+    background: linear-gradient(135deg, rgba(255, 209, 246, 1) 0%, rgba(201, 255, 196, 1) 100%);
 }

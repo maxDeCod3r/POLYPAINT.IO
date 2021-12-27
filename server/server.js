@@ -7,7 +7,7 @@ const contract = require("../sol/abis/Pixels.json")
 const infuraUrl = `https://ropsten.infura.io/v3/${process.env.WEB3_INFURA_PROJECT_ID}`
 const infuraWsUrl = `wss://ropsten.infura.io/ws/v3/${process.env.WEB3_INFURA_PROJECT_ID}`
 const PORT = 3535;
-const PNG_REBUILD_INTERVAL_SECONDS = 20
+const PNG_REBUILD_INTERVAL_SECONDS = 5
 var DB_HAS_CHANGED = false
 Contract.setProvider(infuraWsUrl);
 
@@ -123,6 +123,10 @@ pngUpdator()
 
 app.get("/pixel_data.png", (req, res) => {
     res.sendFile(__dirname + '/latest_map.png');
+})
+
+app.get("/pixel_data.raw", (req, res) => {
+    res.send({ success: true, data: CACHED_DATABASE })
 })
 
 app.listen(PORT, () => {
