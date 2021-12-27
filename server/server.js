@@ -4,8 +4,8 @@ const fs = require('fs')
 const PNG = require('pngjs').PNG
 const Contract = require('web3-eth-contract');
 const contract = require("../sol/abis/Pixels.json")
-const infuraUrl = `https://ropsten.infura.io/v3/${process.env.WEB3_INFURA_PROJECT_ID}`
-const infuraWsUrl = `wss://ropsten.infura.io/ws/v3/${process.env.WEB3_INFURA_PROJECT_ID}`
+const infuraUrl = `https://polygon-mumbai.infura.io/v3/${process.env.WEB3_INFURA_PROJECT_ID}`
+const infuraWsUrl = `wss://polygon-mumbai.infura.io/ws/v3/${process.env.WEB3_INFURA_PROJECT_ID}`
 const PORT = 3535;
 const PNG_REBUILD_INTERVAL_SECONDS = 5
 var DB_HAS_CHANGED = false
@@ -46,6 +46,7 @@ async function downloadDatabase() {
 
 async function initWeb3() {
     const networkId = await web3.eth.net.getId()
+    console.log('Network ID:', networkId);
     var deployedContract = new Contract(contract.abi, contract.networks[networkId].address);
     return { web3, networkId, contract: deployedContract }
 }
