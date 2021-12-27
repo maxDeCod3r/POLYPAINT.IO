@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import "../styles/App.css";
 import Web3 from 'web3'
+import Modal from "./Modal";
+
 
 class App extends Component {
 
@@ -77,13 +79,43 @@ class App extends Component {
         image_update_frequency_ms: 10 * 1000,
         stats: {purchased: 0,available: 0,price: "?"},
         selected_pixel: {pixel_id: null,pixel_x: null,pixel_y: null,pixel_color: null},
+        show_buyer_modal: false,
       }
-
       this.onWindowResize = this.onWindowResize.bind(this)
       let window_height = window.innerHeight
       let window_width = window.innerWidth
       this.state.image_size = (window_height < window_width) ? window_height : window_width
     }
+
+
+
+    handleChange(e) {
+      const target = e.target;
+      const name = target.name;
+      const value = target.value;
+
+      this.setState({
+        [name]: value
+      });
+    }
+
+    handleSubmit(e) {
+      this.setState({ name: this.state.modalInputName });
+      this.buyer_modalClose();
+    }
+
+    buyer_modalOpen() {
+      this.setState({ show_buyer_modal: true });
+    }
+
+    buyer_modalClose() {
+      this.setState({
+        modalInputName: "",
+        show_buyer_modal: false
+      });
+    }
+
+
 
     async componentDidMount() {
       this.startUpdatingPixelGrid()
@@ -99,26 +131,27 @@ class App extends Component {
     render() {
         return (
           <div className = "App" >
-            {/* <nav className = "container">
-              <h1 style = {{ color: 'black' }}>Hello World!</h1>
-              {(() => {
-                if (this.state.connect_button_visibility) {
-                  return (
-                    <button id = "connect_wallet"
-                      className = "btn btn-block btn-primary"
-                      onClick = {() => { this.loadBlockchainData() }
-                  } > Connect wallet </button>);
-                } else {
-                  return (
-                    <div>
-                      <p style = {{ color: 'grey' }}>
-                        Account: { this.state.account }
-                      </p>
-                      <p style = {{ color: 'grey' }}>
-                        Network: { this.state.network }
-                      </p>
-                    </div>)}})()}
-              </nav> */}
+
+
+            <Modal show={this.state.show_buyer_modal} handleClose={e => this.buyer_modalClose(e)}>
+              <h2>Hello Modal</h2>
+              <div className="form-group">
+                <label>Enter Name:</label>
+                <input
+                  type="text"
+                  value={this.state.modalInputName}
+                  name="modalInputName"
+                  onChange={e => this.handleChange(e)}
+                  className="form-control"
+                />
+              </div>
+              <div className="form-group">
+                <button onClick={e => this.handleSubmit(e)} type="button">
+                  Save
+                </button>
+              </div>
+          </Modal>
+
             <div className = "content-container">
               <div className = "column">
                 <div className = "side-box blue-box big-box">
@@ -137,10 +170,10 @@ class App extends Component {
                   </div>
                 </div>
                 <div className = "side-box special-box big-box">
-                  <b> Other stuff </b>
+                  <b>Other stuff </b>
                   <p>
-                    <i className = "fas fa-envelope"></i>me@polypaint.io <br/>
-                    <i className = "fab fa-twitter"> </i>@maxdedeseng <br/>
+                    <i className = "fas fa-envelope"></i> me@polypaint.io <br/>
+                    <i className = "fab fa-twitter"></i> @maxdedeseng <br/>
                     ©2022 All rights reserved
                   </p>
                 </div>
@@ -164,10 +197,13 @@ class App extends Component {
                   )}})()}
 
                 <div>
-                  <div className = "side-box purple-box">
+                  <div className = "side-box purple-box"
+                    style = {this.state.web3_enabled ? {color: 'black', cursor: 'pointer'} : {color: 'grey'}}
+                    onClick={() => {if (this.state.web3_enabled) {this.buyer_modalOpen()}}}
+                    >
                     <b> Buy blocks </b>
                   </div>
-                  <div className = "side-box red-box">
+                  <div className = "side-box red-box" style = {this.state.web3_enabled ? {color: 'black'} : {color: 'grey'}}>
                     <b> Set block colours </b>
                   </div>
                 </div>
