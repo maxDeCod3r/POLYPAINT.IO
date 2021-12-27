@@ -18,9 +18,10 @@
  *
  */
 
-const HDWalletProvider = require('truffle-hdwallet-provider');
+const HDWalletProvider = require('@truffle/hdwallet-provider');
 const infuraKey = process.env.WEB3_INFURA_PROJECT_ID;
 const etherscanKey = process.env.ETHERSCAN_TOKEN;
+const polygonscanKey = process.env.POLYGONSCAN_TOKEN;
 
 module.exports = {
     /**
@@ -58,6 +59,26 @@ module.exports = {
             confirmations: 2,
             timeoutBlocks: 200,
             skipDryRun: true
+        },
+        mumbai: {
+            provider: function() {
+                return new HDWalletProvider(process.env.PRIVATE_KEY, `https://polygon-mumbai.infura.io/v3/${infuraKey}`);
+            },
+            network_id: 80001,
+            confirmations: 2,
+            timeoutBlocks: 200,
+            skipDryRun: true,
+            chainId: 80001
+        },
+        polygon: {
+            provider: function() {
+                return new HDWalletProvider(process.env.PRIVATE_KEY, `https://polygon-mainnet.infura.io/v3/${infuraKey}`);
+            },
+            network_id: 137,
+            confirmations: 2,
+            timeoutBlocks: 200,
+            skipDryRun: true,
+            chainId: 137
         }
         // Useful for testing. The `development` name is special - truffle uses it by default
         // if it's defined here and no other network is specified at the command line.
@@ -144,6 +165,7 @@ module.exports = {
         'truffle-plugin-verify'
     ],
     api_keys: {
-        etherscan: etherscanKey
+        // etherscan: etherscanKey
+        etherscan: polygonscanKey
     }
 };

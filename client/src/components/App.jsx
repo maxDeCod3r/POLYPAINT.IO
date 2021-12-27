@@ -44,8 +44,8 @@ class App extends Component {
             try {
               await web3.currentProvider.request({
                 method: "wallet_switchEthereumChain",
-                params: [{ chainId: "0x3" }]
-                // params: [{ chainId: "0x89" }]
+                params: [{ chainId: "0x3" }] //Ropsten
+                // params: [{ chainId: "0x89" }] //Polygon
               });
             } catch (error) {
               alert(error.message);
