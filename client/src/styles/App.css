@@ -168,3 +168,8 @@ body {
     font-family: 'Kanit', sans-serif;
     font-size: 3em;
 }
+
+.error-message {
+    color: rgb(168, 0, 0);
+    font-size: 2em;
+}

@@ -8,7 +8,7 @@ contract Pixels is ERC721, Ownable {
 
     uint256 public _gridsize = 1000; //will change to 1000 eventually.....l
     uint256 public _totalPixels = _gridsize * _gridsize;
-    uint256 public _pixelPrice = 250000000000000; // approx 1usd
+    uint256 public _pixelPrice = 400000000000000000; // approx 1usd
 
     // bytes3[] public _pixelColours = new bytes3[](_gridsize);
     mapping(uint256 => bytes3) public _pixelColours;
@@ -57,17 +57,17 @@ contract Pixels is ERC721, Ownable {
      }
 
     //function change pixel colour |||ERC721.ownerOf(tokenId)
-    function changePixelColor(uint256 _pixelId, bytes3 _newColour) public {
+    function changePixelColour(uint256 _pixelId, bytes3 _newColour) public {
         require(_pixelId < _totalPixels, "Pixel id out of range");
         require(ownerOf(_pixelId) == msg.sender, "Sender is not Pixel owner");
         _pixelColours[_pixelId] = _newColour;
         emit PixelColourChanged(msg.sender, _newColour, _pixelId);
     }
 
-    function changePixelColorMultiple(uint256[] memory _pixelIds, bytes3[] memory _newColours) external {
+    function changePixelColourMultiple(uint256[] memory _pixelIds, bytes3[] memory _newColours) external {
         require(_pixelIds.length == _newColours.length, "Arrays of inconsistent length");
         for (uint256 i = 0; i < _pixelIds.length; i++) {
-            changePixelColor(_pixelIds[i], _newColours[i]);
+            changePixelColour(_pixelIds[i], _newColours[i]);
         }
     }
 

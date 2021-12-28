@@ -36,9 +36,9 @@ class App extends Component {
           const networkData = Pixels.networks[network_id]
           if (networkData) {
               const abi = Pixels.abi
-              const address = networkData.address
-              const contract = new web3.eth.Contract(abi, address)
-              this.setState({contract})
+              const contractAddress = networkData.address
+              const contract = new web3.eth.Contract(abi, contractAddress)
+              this.setState({contract, contractAddress})
           }
           else {
             try {
@@ -80,14 +80,9 @@ class App extends Component {
       });
     }
 
-    onWindowResize() {
-      let window_height = window.innerHeight
-      let window_width = window.innerWidth
-      let new_size = (window_height < window_width) ? window_height : window_width
-      this.setState({ image_size: new_size })
-    }
-
     countOccurrences = (arr, val) => arr.reduce((a, v) => (v === val ? a + 1 : a), 0);
+
+    UserException(message) {this.message = message; this.name = 'UserException';}
 
     constructor(props) {
       super(props)
@@ -99,40 +94,102 @@ class App extends Component {
         connect_button_visibility: true,
         raw_grid: null,
         image: {source: '/pixel_data.png',hash: Date.now()},
-        image_size: null,
         image_update_frequency_ms: 10 * 1000,
         stats: {purchased: 0,available: 0,price: "?"},
         selected_pixel: {pixel_id: null,pixel_x: null,pixel_y: null,pixel_color: null},
         show_buyer_modal: false,
-        show_changer_modal: false,
+        show_setter_modal: false,
+        buy_modal_price: null,
         buy_modal_pixels: null,
         buy_modal_colours: null,
         set_modal_pixels: null,
         set_modal_colours: null,
         contract: null,
+        contractAddress: null,
+        hovering_pixel: {
+          id_long: 0,
+          id_short: {x: 0, y:0},
+          hex_colour: "#000000",
+        }
       }
-      this.onWindowResize = this.onWindowResize.bind(this)
-      let window_height = window.innerHeight
-      let window_width = window.innerWidth
-      this.state.image_size = (window_height < window_width) ? window_height : window_width
     }
 
-
-
     handle_buyer_submit(e) {
-      console.log(e);
+      try {
+        const pixelContract = this.state.contract
+        const pixelsToBuy = this.state.buy_modal_pixels.split(',');
+        const pixelsToSet = this.state.buy_modal_colours.split(',');
+        const idArray = []
+        const colorArray = []
+        pixelsToBuy.forEach(pixel => {idArray.push(Number(pixel))});
+        pixelsToSet.forEach(color => {colorArray.push(color.replace(' ',''))});
+        console.log(idArray);
+        console.log(colorArray);
+        const payableAmount = this.state.buy_modal_price * 1000000000000000000
+        if (idArray.length !== colorArray.length) {throw {message:'Array lengths inconsistent'}}
+          console.log("Sending contract call");
+          pixelContract.methods.mintMultiple(idArray, colorArray).send({from: this.state.account, value: payableAmount})
+          .on('receipt', (e) => {
+            console.log('receipt');
+            console.log(e);
+          })
+          .on('transactionHash', (e) => {
+            console.log('transactionHash');
+            console.log(e);
+            this.setState({show_buyer_modal: false})
+          })
+        } catch (e) {window.alert(e.message)}
     }
 
     handle_setter_submit(e) {
-      console.log(e);
+      try {
+        const pixelContract = this.state.contract
+        const pixelsToChange = this.state.set_modal_pixels.split(',');
+        const pixelColours = this.state.set_modal_colours.split(',');
+        const idArray = []
+        const colorArray = []
+        pixelsToChange.forEach(pixel => {idArray.push(Number(pixel))});
+        pixelColours.forEach(color => {colorArray.push(color.replace(' ',''))});
+        console.log(idArray);
+        console.log(colorArray);
+        console.log("Sending contract call");
+        pixelContract.methods.changePixelColourMultiple(idArray, colorArray).send({from: this.state.account})
+        .on('receipt', (e) => {
+          console.log('receipt');
+          console.log(e);
+        })
+        .on('transactionHash', (e) => {
+          console.log('transactionHash');
+          console.log(e);
+          this.setState({show_setter_modal: false})
+        })
+      } catch (e) {window.alert(e.message)}
     }
 
     buyer_modalOpen() {this.setState({ show_buyer_modal: true });}
-    setter_modalOpen() {this.setState({ show_changer_modal: true });}
+    setter_modalOpen() {this.setState({ show_setter_modal: true });}
 
     buyer_modalClose() {this.setState({show_buyer_modal: false})}
     setter_modalClose() {this.setState({show_setter_modal: false})}
 
+
+    mouseOnGrid(e) {
+      const rect = e.target.getBoundingClientRect();
+      const elementSize = rect.right - rect.left
+      const x_pix_rel = e.clientX - rect.left; //x position within the element.
+      const y_pix_rel = e.clientY - rect.top;  //y position within the element.
+      const x = parseInt(x_pix_rel * 1000 / elementSize)
+      const y = parseInt(y_pix_rel * 1000 / elementSize)
+      const relativeIndex = (1000*y) + x
+      console.log(relativeIndex);
+
+      this.setState(
+      {hovering_pixel: {
+        id_long: relativeIndex,
+        id_short: {x, y},
+        hex_colour: this.state.raw_grid[relativeIndex]
+      }})
+    }
 
 
     async componentDidMount() {
@@ -155,6 +212,11 @@ class App extends Component {
                 <b>Buy blocks</b>
                 <div className="modal-form-group">
                   <input type="text"
+                    id="pay_block_ids"
+                    placeholder="Payment (0.4 * amount of pixels) (MATIC)"
+                    onChange={ (e)  => {this.setState({buy_modal_price: e.target.value})}}
+                    name="modalInputName"/>
+                  <input type="text"
                     id="buy_block_ids"
                     placeholder="Block id(s): 500,501,502"
                     onChange={ (e)  => {this.setState({buy_modal_pixels: e.target.value})}}
@@ -166,13 +228,13 @@ class App extends Component {
                     name="modalInputName"/>
                 </div>
                 <div className="modal-button-row">
-                  <button className='modal-button modal-submit' onClick={e => this.handle_buyer_submit(e)} type="button">Buy</button>
-                  <button className="modal-button modal-close" onClick={e => this.buyer_modalClose(e)}><i className="fas fa-times"></i></button>
+                  <button className='modal-button modal-submit' onClick={() => this.handle_buyer_submit()} type="button">Buy</button>
+                  <button className="modal-button modal-close" onClick={() => this.buyer_modalClose()}><i className="fas fa-times"></i></button>
                 </div>
               </div>
           </Modal>
 
-          <Modal show={this.state.show_changer_modal}>
+          <Modal show={this.state.show_setter_modal}>
               <div className="main-modal">
                 <b>Change blocks</b>
                 <div className="modal-form-group">
@@ -188,8 +250,8 @@ class App extends Component {
                     name="modalInputName"/>
                 </div>
                 <div className="modal-button-row">
-                  <button className='modal-button modal-submit' onClick={e => this.handle_setter_submit(e)} type="button">Buy</button>
-                  <button className="modal-button modal-close" onClick={e => this.setter_modalClose(e)}><i className="fas fa-times"></i></button>
+                  <button className='modal-button modal-submit' onClick={() => this.handle_setter_submit()} type="button">Set</button>
+                  <button className="modal-button modal-close" onClick={() => this.setter_modalClose()}><i className="fas fa-times"></i></button>
                 </div>
               </div>
           </Modal>
@@ -221,7 +283,7 @@ class App extends Component {
                 </div>
               </div>
               <div className = "column-separator"> </div>
-              <div className = "column column-img">
+              <div className = "column column-img" onMouseMove={(e) => {this.mouseOnGrid(e)}}>
                 <img src = { `${this.state.image.source}?${this.state.image.hash}` } alt = "THE_MAP"></img>
               </div>
               <div className = "column-separator"></div>
@@ -245,16 +307,16 @@ class App extends Component {
                     <b> Buy blocks </b>
                   </div>
                   <div className = "side-box red-box" style = {this.state.web3_enabled ? {color: 'black', cursor: 'pointer'} : {color: 'grey'}}
-                  onClick={() => {if (this.state.web3_enabled) {this.buyer_modalOpen()}}}>
+                  onClick={() => {if (this.state.web3_enabled) {this.setter_modalOpen()}}}>
                     <b> Set block colours </b>
                   </div>
                 </div>
                 <div className = "side-box green-box big-box">
                   <b> Block info </b>
                   <p>
-                    Id: 999999 @ 1000, 1000 <br/>
-                    Hex colour: { '0xffeecc' } <br/>
-                    <a href = "/">OpenSea Link</a>
+                    Id: {this.state.hovering_pixel.id_long} @ {this.state.hovering_pixel.id_short.x}, {this.state.hovering_pixel.id_short.y} <br/>
+                    Hex colour: {this.state.hovering_pixel.hex_colour} <br/>
+                    <a href = 'https://opensea.io' target="_blank">COntract on OpenSea</a>
                   </p>
                 </div>
               </div>
