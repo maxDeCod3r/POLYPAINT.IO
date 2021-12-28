@@ -1,15 +1,14 @@
 const express = require("express");
 const Web3 = require('web3')
 const fs = require('fs')
-const WebSocket = require("ws");
 const PNG = require('pngjs').PNG
 const Contract = require('web3-eth-contract');
 const contract = require("../sol/abis/Pixels.json")
 const infuraUrl = `https://polygon-mumbai.infura.io/v3/${process.env.WEB3_INFURA_PROJECT_ID}`
+Contract.setProvider("wss://ws-mumbai.matic.today/"); // For Polygon mainnet: wss://ws-mainnet.matic.network/
 const PORT = 3535;
 const PNG_REBUILD_INTERVAL_SECONDS = 5
 var DB_HAS_CHANGED = false
-Contract.setProvider("wss://ws-mumbai.matic.today/"); // For Polygon mainnet: wss://ws-mainnet.matic.network/
 
 const app = express();
 const web3 = new Web3(infuraUrl)
@@ -40,8 +39,6 @@ async function downloadDatabase() {
         updatePng(true)
     });
 }
-
-
 
 async function initWeb3() {
     const networkId = await web3.eth.net.getId()
