@@ -132,10 +132,9 @@ app.get("/pixel_data.raw", (req, res) => {
     res.send({ success: true, data: CACHED_DATABASE })
 })
 
-app.get("/nft/*", (req, res) => {
+app.get("/nft/:token_id", (req, res) => {
     try {
-        const req_url = req.originalUrl.split('/')
-        const req_id = parseInt(req_url.at(-1))
+        const req_id = parseInt(req.params.token_id).toString()
         if (req_id < 1000000) {
             const xypos = long2ShortCoord(req_id)
             const nft_colour_hex = '#' + CACHED_DATABASE[req_id].toString(16)

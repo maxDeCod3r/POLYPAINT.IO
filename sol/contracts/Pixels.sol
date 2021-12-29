@@ -9,7 +9,7 @@ contract Pixels is ERC721, Ownable {
     uint256 public _gridsize = 1000; //will change to 1000 eventually.....l
     uint256 public _totalPixels = _gridsize * _gridsize;
     uint256 public _pixelPrice = 400000000000000000; // approx 1usd
-    string private _baseURIextended;
+    string public _baseURIextended;
 
     // bytes3[] public _pixelColours = new bytes3[](_gridsize);
     mapping(uint256 => bytes3) public _pixelColours;
@@ -18,8 +18,8 @@ contract Pixels is ERC721, Ownable {
     event PixelMinted (uint date, address indexed to, uint256 pixelId);
     event PixelColourChanged ( address owner, bytes3 newColour, uint256 pixelId );
 
-    constructor(string memory baseURI_) ERC721("Pixels", "PIX") {
-        _baseURIextended = baseURI_;
+    constructor() ERC721("Pixels", "PIX") {
+        _baseURIextended = "https://polypaint.io/nft/";
     }
 
     function setTokenPrice(uint256 _newPrice) external onlyOwner {
