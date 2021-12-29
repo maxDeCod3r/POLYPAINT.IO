@@ -1,21 +1,25 @@
+const functions = require('firebase-functions');
 const express = require("express");
 const Web3 = require('web3')
 const fs = require('fs')
+const path = require('path')
 const PNG = require('pngjs').PNG
 const Contract = require('web3-eth-contract');
-const contract = require("../sol/abis/Pixels.json")
-const infuraUrl = `https://polygon-mumbai.infura.io/v3/${process.env.WEB3_INFURA_PROJECT_ID}`
+const contract = require("./sol/abis/Pixels.json")
+const WEB3_INFURA_PROJECT_ID = "c24b3cac772d4f2a874a18cded57af37"
+const infuraUrl = `https://polygon-mumbai.infura.io/v3/${WEB3_INFURA_PROJECT_ID}`
 Contract.setProvider("wss://ws-mumbai.matic.today/"); // For Polygon mainnet: wss://ws-mainnet.matic.network/
-const PORT = 3535;
+const PORT = 80;
 const PNG_REBUILD_INTERVAL_SECONDS = 5
 var DB_HAS_CHANGED = false
 
 const app = express();
 const web3 = new Web3(infuraUrl)
 
+app.use('/', express.static(path.join(__dirname, 'build')))
 
 var firebase_admin = require("firebase-admin");
-var serviceAccount = require("../secrets/firebase_creds.json");
+var serviceAccount = require("./secrets/firebase_creds.json");
 firebase_admin.initializeApp({
     credential: firebase_admin.credential.cert(serviceAccount),
     databaseURL: "https://polypaint-io-default-rtdb.europe-west1.firebasedatabase.app/"
@@ -116,7 +120,7 @@ function createPng(imageData) {
         }
     }
 
-    png.pack().pipe(fs.createWriteStream('latest_map.png'));
+    png.pack().pipe(fs.createWriteStream('/tmp/latest_map.png'));
     console.log('update done');
 }
 
@@ -125,7 +129,7 @@ run_blockchain_mirror()
 pngUpdator()
 
 app.get("/pixel_data.png", (req, res) => {
-    res.sendFile(__dirname + '/latest_map.png');
+    res.sendFile('/tmp/latest_map.png');
 })
 
 app.get("/pixel_data.raw", (req, res) => {
@@ -167,3 +171,5 @@ app.get("/nft_artwork.png", (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server listening on ${PORT}`);
 })
+
+exports.app = functions.https.onRequest(app)

@@ -123,8 +123,6 @@ class App extends Component {
         const colorArray = []
         pixelsToBuy.forEach(pixel => {idArray.push(Number(pixel))});
         pixelsToSet.forEach(color => {colorArray.push(color.replace(' ',''))});
-        console.log(idArray);
-        console.log(colorArray);
         const payableAmount = this.state.buy_modal_price * 1000000000000000000
         if (idArray.length !== colorArray.length) {throw {message:'Array lengths inconsistent'}}
           console.log("Sending contract call");
@@ -150,8 +148,6 @@ class App extends Component {
         const colorArray = []
         pixelsToChange.forEach(pixel => {idArray.push(Number(pixel))});
         pixelColours.forEach(color => {colorArray.push(color.replace(' ',''))});
-        console.log(idArray);
-        console.log(colorArray);
         console.log("Sending contract call");
         pixelContract.methods.changePixelColourMultiple(idArray, colorArray).send({from: this.state.account})
         .on('receipt', (e) => {
@@ -181,7 +177,6 @@ class App extends Component {
       const x = parseInt(x_pix_rel * 1000 / elementSize)
       const y = parseInt(y_pix_rel * 1000 / elementSize)
       const relativeIndex = (1000*y) + x
-      console.log(relativeIndex);
 
       this.setState(
       {hovering_pixel: {
