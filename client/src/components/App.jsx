@@ -44,7 +44,7 @@ class App extends Component {
             try {
               await web3.currentProvider.request({
                 method: "wallet_switchEthereumChain",
-                params: [{ chainId: "0x3" }] //Ropsten
+                params: [{ chainId: "0x13881" }] //Mumbai
                 // params: [{ chainId: "0x89" }] //Polygon
               });
             } catch (error) {
@@ -316,7 +316,7 @@ class App extends Component {
                   <p>
                     Id: {this.state.hovering_pixel.id_long} @ {this.state.hovering_pixel.id_short.x}, {this.state.hovering_pixel.id_short.y} <br/>
                     Hex colour: {this.state.hovering_pixel.hex_colour} <br/>
-                    <a href = 'https://opensea.io' target="_blank">COntract on OpenSea</a>
+                    <a href = 'https://polygonscan.com' target="_blank">View Contract</a>
                   </p>
                 </div>
               </div>
