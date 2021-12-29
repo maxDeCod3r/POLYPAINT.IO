@@ -94,6 +94,12 @@ async function pngUpdator() {
     setInterval(function() { updatePng() }, PNG_REBUILD_INTERVAL_SECONDS * 1000)
 }
 
+function long2ShortCoord(coord) {
+    x = coord % 1000
+    y = Math.floor(coord / 1000)
+    return { x, y }
+}
+
 function createPng(imageData) {
     var png = new PNG({
         width: imageData[0].length,
@@ -124,6 +130,39 @@ app.get("/pixel_data.png", (req, res) => {
 
 app.get("/pixel_data.raw", (req, res) => {
     res.send({ success: true, data: CACHED_DATABASE })
+})
+
+app.get("/nft/*", (req, res) => {
+    try {
+        const req_url = req.originalUrl.split('/')
+        const req_id = parseInt(req_url.at(-1))
+        if (req_id < 1000000) {
+            const xypos = long2ShortCoord(req_id)
+            const nft_colour_hex = '#' + CACHED_DATABASE[req_id].toString(16)
+            const nft_colour_raw = CACHED_DATABASE[req_id].toString(16)
+            return_data = {
+                name: "POLYPAINT.IO Block",
+                description: "A single block on the polypaint.io canvas with a changeable hex colour",
+                image: "https://polypaint.io/nft_artwork.png",
+                background_color: nft_colour_raw,
+                attributes: {
+                    colour: nft_colour_hex,
+                    positionX: xypos.x,
+                    positionY: xypos.y
+                }
+            }
+            res.send(return_data)
+        } else {
+            res.send({ error: "Invalid URI" })
+        }
+    } catch (e) {
+        console.log('error: ', e.message);
+        res.send({ error: e.message })
+    }
+})
+
+app.get("/nft_artwork.png", (req, res) => {
+    res.sendFile(__dirname + '/nft_artwork.png');
 })
 
 app.listen(PORT, () => {
