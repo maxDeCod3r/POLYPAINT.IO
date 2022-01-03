@@ -5,10 +5,10 @@ const path = require('path')
 const PNG = require('pngjs').PNG
 const Contract = require('web3-eth-contract');
 const contract = require("./sol/abis/Pixels.json")
-const WEB3_INFURA_PROJECT_ID = "c24b3cac772d4f2a874a18cded57af37"
-const infuraUrl = `https://polygon-mumbai.infura.io/v3/${WEB3_INFURA_PROJECT_ID}`
-Contract.setProvider("wss://ws-mumbai.matic.today/"); // For Polygon mainnet: wss://ws-mainnet.matic.network/
-const PORT = 80;
+const infuraUrl = `https://polygon-mumbai.infura.io/v3/${process.env.WEB3_INFURA_PROJECT_ID}`
+    // Contract.setProvider("wss://ws-mumbai.matic.today/"); // For Polygon mainnet: wss://ws-mainnet.matic.network/
+Contract.setProvider("wss://matic-testnet-archive-ws.bwarelabs.com"); // For Polygon mainnet: wss://ws-mainnet.matic.network/
+const PORT = 3535;
 const PNG_REBUILD_INTERVAL_SECONDS = 5
 var DB_HAS_CHANGED = false
 
@@ -59,7 +59,8 @@ async function run_blockchain_mirror() {
 
 async function subscribeToTopic(web3_instance) {
     const currBlockNo = await web3.eth.getBlockNumber()
-    web3_instance.contract.events.PixelColourChanged({ fromBlock: currBlockNo })
+    web3_instance.contract.events.PixelColourChanged({ fromBlock: 0 })
+        // web3_instance.contract.events.PixelColourChanged({ fromBlock: currBlockNo })
         .on("connected", function(subscriptionId) {
             console.log("Connected, subscription id:", subscriptionId);
         })
@@ -119,7 +120,7 @@ function createPng(imageData) {
         }
     }
 
-    png.pack().pipe(fs.createWriteStream('/tmp/latest_map.png'));
+    png.pack().pipe(fs.createWriteStream('latest_map.png'));
     console.log('update done');
 }
 
@@ -128,7 +129,7 @@ run_blockchain_mirror()
 pngUpdator()
 
 app.get("/pixel_data.png", (req, res) => {
-    res.sendFile('/tmp/latest_map.png');
+    res.sendFile(__dirname + '/latest_map.png');
 })
 
 app.get("/pixel_data.raw", (req, res) => {

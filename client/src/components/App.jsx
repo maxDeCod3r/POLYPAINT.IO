@@ -124,7 +124,7 @@ class App extends Component {
         pixelsToBuy.forEach(pixel => {idArray.push(Number(pixel))});
         pixelsToSet.forEach(color => {colorArray.push(color.replace(' ',''))});
         const payableAmount = this.state.buy_modal_price * 1000000000000000000
-        if (idArray.length !== colorArray.length) {throw {message:'Array lengths inconsistent'}}
+        if (idArray.length !== colorArray.length) {alert('Array lengths inconsistent')}
           console.log("Sending contract call");
           pixelContract.methods.mintMultiple(idArray, colorArray).send({from: this.state.account, value: payableAmount})
           .on('receipt', (e) => {
@@ -260,9 +260,9 @@ class App extends Component {
                     Block price: { this.state.stats.price } USD
                   </p>
                 </div>
-                <div>
+                <div className="middle-col">
                   <div className = "side-box purple-box">
-                    <b> About the project </b>
+                    <b> About </b>
                   </div>
                   <div className = "side-box red-box">
                     <b> How to use </b>
@@ -294,24 +294,23 @@ class App extends Component {
                   <div className = "side-box blue-box right-correction clickable-box" onClick = {() => {console.log('smth');}}>
                     <b>{`${this.state.account.slice(0, 5)}...${this.state.account.slice(38, 42)}`}</b></div>
                   )}})()}
-
-                <div>
-                  <div className = "side-box purple-box"
-                    style = {this.state.web3_enabled ? {color: 'black', cursor: 'pointer'} : {color: 'grey'}}
-                    onClick={() => {if (this.state.web3_enabled) {this.buyer_modalOpen()}}}>
-                    <b> Buy blocks </b>
-                  </div>
-                  <div className = "side-box red-box" style = {this.state.web3_enabled ? {color: 'black', cursor: 'pointer'} : {color: 'grey'}}
-                  onClick={() => {if (this.state.web3_enabled) {this.setter_modalOpen()}}}>
-                    <b> Set block colours </b>
-                  </div>
+                  <div className="middle-col">
+                    <div className = "side-box purple-box"
+                      style = {this.state.web3_enabled ? {color: 'black', cursor: 'pointer'} : {color: 'grey'}}
+                      onClick={() => {if (this.state.web3_enabled) {this.buyer_modalOpen()}}}>
+                      <b> Buy blocks </b>
+                    </div>
+                    <div className = "side-box red-box" style = {this.state.web3_enabled ? {color: 'black', cursor: 'pointer'} : {color: 'grey'}}
+                    onClick={() => {if (this.state.web3_enabled) {this.setter_modalOpen()}}}>
+                      <b> Set colours </b>
+                    </div>
                 </div>
-                <div className = "side-box green-box big-box">
+                <div className = "side-box green-box big-box info-box">
                   <b> Block info </b>
                   <p>
                     Id: {this.state.hovering_pixel.id_long} @ {this.state.hovering_pixel.id_short.x}, {this.state.hovering_pixel.id_short.y} <br/>
                     Hex colour: {this.state.hovering_pixel.hex_colour} <br/>
-                    <a href = 'https://polygonscan.com' target="_blank">View Contract</a>
+                    <a href = 'https://polygonscan.com' target="_blank" rel="noreferrer">View Contract</a>
                   </p>
                 </div>
               </div>

@@ -28,7 +28,7 @@ body {
 }
 
 .column {
-    width: 15%;
+    width: 20%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -53,7 +53,7 @@ body {
     border: 7px solid white;
     border-radius: 30px;
     padding: 0.3em 0em 0.3em 0em;
-    margin: 1em 1em 1em 1em;
+    margin: 1em 1vw 1em 1vw;
     text-align: center;
     white-space: nowrap;
 }
@@ -70,12 +70,12 @@ body {
 
 .side-box b {
     font-family: 'Kanit', sans-serif;
-    font-size: x-large;
+    font-size: min(25px, 2vw);
 }
 
 .side-box p {
     font-family: 'Kanit-extralight', sans-serif;
-    font-size: large;
+    font-size: min(18px, 1.2vw);
     margin-bottom: 0;
 }
 
@@ -112,6 +112,7 @@ body {
     top: 30%;
     padding: 20px;
     text-align: center;
+    font-size: min(15px, 3vw);
 }
 
 .modal-button {
@@ -122,6 +123,7 @@ body {
     font-size: 3em;
     font-family: 'Kanit', sans-serif;
     border-radius: 50px;
+    font-size: min(25px, 3vw);
 }
 
 .modal-submit {
@@ -152,6 +154,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    font-size: min(25px, 1.5vw);
 }
 
 .modal-form-group input {
@@ -159,7 +162,7 @@ body {
     width: 60%;
     margin: 1em auto;
     padding: 0.5em 1em 0.5em 1em;
-    font-size: 1.3em;
+    font-size: min(20px, 1.5vw);
     border-radius: 30px;
     border: none;
 }
@@ -169,7 +172,49 @@ body {
     font-size: 3em;
 }
 
-.error-message {
-    color: rgb(168, 0, 0);
-    font-size: 2em;
+@media only screen and (max-width: 1000px) {
+    .content-container {
+        flex-direction: column;
+    }
+    .column-img {
+        width: 100vw;
+        height: 100vw;
+    }
+    .column img {
+        width: 100vw;
+        height: 100vw;
+    }
+    .column {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+    .side-box {
+        padding-left: 3%;
+        padding-right: 3%;
+        padding-top: 0;
+        padding-bottom: 0em;
+    }
+    .side-box b {
+        font-size: 3vw;
+    }
+    .side-box p {
+        font-size: 2vw;
+    }
+    .middle-col {
+        width: 30%;
+    }
+    .column-separator {
+        display: none;
+    }
+    .info-box {
+        height: 20vw;
+    }
+    .modal-form-group input {
+        width: 85%;
+    }
+    .modal-container {
+        font-size: 0.5em;
+    }
 }

@@ -1,11 +1,13 @@
 const express = require("express");
 const Web3 = require('web3')
 const fs = require('fs')
+const path = require('path')
 const PNG = require('pngjs').PNG
 const Contract = require('web3-eth-contract');
 const contract = require("./sol/abis/Pixels.json")
 const infuraUrl = `https://polygon-mumbai.infura.io/v3/${process.env.WEB3_INFURA_PROJECT_ID}`
-Contract.setProvider("wss://ws-mumbai.matic.today/"); // For Polygon mainnet: wss://ws-mainnet.matic.network/
+    // Contract.setProvider("wss://ws-mumbai.matic.today/"); // For Polygon mainnet: wss://ws-mainnet.matic.network/
+Contract.setProvider("wss://matic-testnet-archive-ws.bwarelabs.com"); // For Polygon mainnet: wss://ws-mainnet.matic.network/
 const PORT = 3535;
 const PNG_REBUILD_INTERVAL_SECONDS = 5
 var DB_HAS_CHANGED = false
@@ -13,7 +15,7 @@ var DB_HAS_CHANGED = false
 const app = express();
 const web3 = new Web3(infuraUrl)
 
-//test
+app.use('/', express.static(path.join(__dirname, 'build')))
 
 var firebase_admin = require("firebase-admin");
 var serviceAccount = require("./secrets/firebase_creds.json");
@@ -57,7 +59,8 @@ async function run_blockchain_mirror() {
 
 async function subscribeToTopic(web3_instance) {
     const currBlockNo = await web3.eth.getBlockNumber()
-    web3_instance.contract.events.PixelColourChanged({ fromBlock: currBlockNo })
+    web3_instance.contract.events.PixelColourChanged({ fromBlock: 0 })
+        // web3_instance.contract.events.PixelColourChanged({ fromBlock: currBlockNo })
         .on("connected", function(subscriptionId) {
             console.log("Connected, subscription id:", subscriptionId);
         })
@@ -126,7 +129,6 @@ run_blockchain_mirror()
 pngUpdator()
 
 app.get("/pixel_data.png", (req, res) => {
-    console.log('sending pixel image');
     res.sendFile(__dirname + '/latest_map.png');
 })
 
