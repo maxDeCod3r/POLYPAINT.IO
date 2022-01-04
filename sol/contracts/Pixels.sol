@@ -14,6 +14,7 @@ contract Pixels is ERC721, Ownable {
     // bytes3[] public _pixelColours = new bytes3[](_gridsize);
     mapping(uint256 => bytes3) public _pixelColours;
     mapping(uint256 => bool) public _pixelOwned;
+    mapping(uint256 => string) public _pixelURL;
 
     event PixelMinted (uint date, address indexed to, uint256 pixelId);
     event PixelColourChanged ( address owner, bytes3 newColour, uint256 pixelId );
@@ -26,29 +27,37 @@ contract Pixels is ERC721, Ownable {
         _pixelPrice = _newPrice;
     }
 
-    function mint(uint256 _pixelId, bytes3 _newColour) public payable {
+    function mint(uint256 _pixelId, bytes3 _newColour, string memory _customURL) public payable {
         require(!_pixelOwned[_pixelId], "Pixel is already owned");
         require(_pixelId < _totalPixels, "Pixel out of range");
         require(msg.value >= _pixelPrice, "No/ Insufficient fees provided");
         _pixelOwned[_pixelId] = true;
         _pixelColours[_pixelId] = _newColour;
+        _pixelURL[_pixelId]  = _customURL;
         _safeMint(msg.sender, _pixelId);
         emit PixelMinted(block.timestamp, msg.sender, _pixelId);
         emit PixelColourChanged(msg.sender, _newColour, _pixelId);
     }
 
-    function mint(uint256 _pixelId) external payable {
-        mint(_pixelId, 0x111111);
+    function mint(uint256 _pixelId, bytes3 _newColour) external payable {
+        mint(_pixelId, _newColour, "");
     }
 
-    function mintMultiple(uint256[] memory _pixelIds, bytes3[] memory _newColours) public payable {
+    function mint(uint256 _pixelId, string memory _customURL) external payable {
+        mint(_pixelId, 0x111111, _customURL);
+    }
+
+    function mint(uint256 _pixelId) external payable {
+        mint(_pixelId, 0x111111, "");
+    }
+
+    function mintMultiple(uint256[] memory _pixelIds, bytes3[] memory _newColours, string memory _customURL) public payable {
         require(msg.value >= _pixelIds.length * _pixelPrice, "No/ Insufficient fees provided");
         require(_pixelIds.length == _newColours.length, "Arrays of inconsistent length");
         for (uint256 i = 0; i < _pixelIds.length; i++) {
-            mint(_pixelIds[i], _newColours[i]);
+            mint(_pixelIds[i], _newColours[i], _customURL);
         }
     }
-
 
     function getBalance() public view returns(uint256){
         return address(this).balance;
@@ -83,6 +92,15 @@ contract Pixels is ERC721, Ownable {
         }
     }
 
+    function getPixelCustomURL(uint256 _pixelId) public view returns (string memory) {
+        require(_pixelId < _totalPixels, "Pixel id out of range");
+        if(_pixelOwned[_pixelId]) {
+            return _pixelURL[_pixelId];
+        } else {
+            return "";
+        }
+    }
+
     function isPixelOwned(uint256 _pixelId) public view returns (bool) {
         require(_pixelId < _totalPixels, "Pixel id out of range");
         return _pixelOwned[_pixelId];
@@ -95,4 +113,5 @@ contract Pixels is ERC721, Ownable {
     function _baseURI() internal view virtual override returns (string memory) {
         return _baseURIextended;
     }
+
 }
