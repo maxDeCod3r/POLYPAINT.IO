@@ -64,7 +64,7 @@ class App extends Component {
     }
 
     async updatePixelDatabase() {
-      fetch("/pixel_data.raw")
+      fetch("/pixel_data.colours")
       .then((res) => res.json())
       .then((data) => {
         var downloadedArray = data.data
@@ -77,6 +77,16 @@ class App extends Component {
         const available = this.countOccurrences(newArray, "#2c2e43")
         const purchased = newArray.length - available
         this.setState({stats: {purchased, available, price: "?"}})
+      });
+      fetch("/pixel_data.links")
+      .then((res) => res.json())
+      .then((data) => {
+        var downloadedArray = data.data
+        let newArray = []
+        downloadedArray.forEach(piece => {
+          newArray.push(String(piece))
+        });
+        this.setState({ raw_links: newArray })
       });
     }
 
@@ -93,6 +103,7 @@ class App extends Component {
         // web3_enabled: false,
         connect_button_visibility: true,
         raw_grid: null,
+        raw_links: null,
         image: {source: '/pixel_data.png',hash: Date.now()},
         image_update_frequency_ms: 10 * 1000,
         stats: {purchased: 0,available: 0,price: "?"},
@@ -110,6 +121,7 @@ class App extends Component {
           id_long: 0,
           id_short: {x: 0, y:0},
           hex_colour: "#000000",
+          link: '/'
         }
       }
     }
@@ -126,7 +138,7 @@ class App extends Component {
         const payableAmount = this.state.buy_modal_price * 1000000000000000000
         if (idArray.length !== colorArray.length) {alert('Array lengths inconsistent')}
           console.log("Sending contract call");
-          pixelContract.methods.mintMultiple(idArray, colorArray).send({from: this.state.account, value: payableAmount})
+          pixelContract.methods.mintMultiple(idArray, colorArray, '/').send({from: this.state.account, value: payableAmount})
           .on('receipt', (e) => {
             console.log('receipt');
             console.log(e);
@@ -182,7 +194,8 @@ class App extends Component {
       {hovering_pixel: {
         id_long: relativeIndex,
         id_short: {x, y},
-        hex_colour: this.state.raw_grid[relativeIndex]
+        hex_colour: this.state.raw_grid[relativeIndex],
+        link: this.state.raw_links[relativeIndex]
       }})
     }
 
@@ -310,7 +323,7 @@ class App extends Component {
                   <p>
                     Id: {this.state.hovering_pixel.id_long} @ {this.state.hovering_pixel.id_short.x}, {this.state.hovering_pixel.id_short.y} <br/>
                     Hex colour: {this.state.hovering_pixel.hex_colour} <br/>
-                    <a href = 'https://polygonscan.com' target="_blank" rel="noreferrer">View Contract</a>
+                    Link: {this.state.hovering_pixel.link}
                   </p>
                 </div>
               </div>

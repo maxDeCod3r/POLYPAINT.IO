@@ -24,10 +24,15 @@ firebase_admin.initializeApp({
     databaseURL: "https://polypaint-io-default-rtdb.europe-west1.firebasedatabase.app/"
 });
 var database = firebase_admin.database();
-var PIXEL_TABLE = database.ref("Pixels");
-var CACHED_DATABASE = []
+var PIXEL_TABLE = database.ref("PixelColours");
+var URL_TABLE = database.ref("PixelURLs");
+var CACHED_DATABASE_COLOURS = []
+var CACHED_DATABASE_URLS = []
 for (let i = 0; i < 1000000; i++) {
-    CACHED_DATABASE.push(0x2C2E43)
+    CACHED_DATABASE_COLOURS.push(0x2C2E43)
+}
+for (let i = 0; i < 1000000; i++) {
+    CACHED_DATABASE_URLS.push("/")
 }
 
 async function downloadDatabase() {
@@ -35,11 +40,20 @@ async function downloadDatabase() {
         var downloadedArray = snapshot.val()
         for (const [key, value] of Object.entries(downloadedArray)) {
             if (key >= 0) {
-                CACHED_DATABASE[key] = parseInt(value)
+                CACHED_DATABASE_COLOURS[key] = parseInt(value)
             }
         }
-        console.log("Initial database download complete");
+        console.log("Initial colour database download complete");
         updatePng(true)
+    });
+    URL_TABLE.once("value", function(snapshot) {
+        var downloadedArray = snapshot.val()
+        for (const [key, value] of Object.entries(downloadedArray)) {
+            if (key >= 0) {
+                CACHED_DATABASE_URLS[key] = parseInt(value)
+            }
+        }
+        console.log("Initial URL database download complete");
     });
 }
 
@@ -67,12 +81,16 @@ async function subscribeToTopic(web3_instance) {
         .on('data', function(event) {
             let pixelId = String(event.returnValues.pixelId)
             let newPixelColour = String(event.returnValues.newColour)
-            let newPixelURL = String(event.returnValues.newColour)
+            let newPixelURL = String(event.returnValues.newURL)
             console.log(`Got contract PixelColourChanged event. PixelId: ${pixelId}, new colour: ${newPixelColour}`);
             console.log("Updating db...");
-            CACHED_DATABASE[pixelId] = newPixelColour
+            CACHED_DATABASE_COLOURS[pixelId] = newPixelColour
             PIXEL_TABLE.update({
                 [pixelId]: newPixelColour
+            })
+            CACHED_DATABASE_URLS[pixelId] = newPixelURL
+            URL_TABLE.update({
+                [pixelId]: newPixelURL
             })
             DB_HAS_CHANGED = true
         })
@@ -89,7 +107,7 @@ function splitArray(array, part) {
 async function updatePng(override = false) {
     if (DB_HAS_CHANGED || override) {
         console.log('updating image');
-        image_grid = splitArray(CACHED_DATABASE, 1000)
+        image_grid = splitArray(CACHED_DATABASE_COLOURS, 1000)
         createPng(image_grid)
         DB_HAS_CHANGED = false
     }
@@ -133,8 +151,12 @@ app.get("/pixel_data.png", (req, res) => {
     res.sendFile(__dirname + '/latest_map.png');
 })
 
-app.get("/pixel_data.raw", (req, res) => {
-    res.send({ success: true, data: CACHED_DATABASE })
+app.get("/pixel_data.colours", (req, res) => {
+    res.send({ success: true, data: CACHED_DATABASE_COLOURS })
+})
+
+app.get("/pixel_data.links", (req, res) => {
+    res.send({ success: true, data: CACHED_DATABASE_URLS })
 })
 
 app.get("/nft/:token_id", (req, res) => {
@@ -142,8 +164,9 @@ app.get("/nft/:token_id", (req, res) => {
         const req_id = parseInt(req.params.token_id).toString()
         if (req_id < 1000000) {
             const xypos = long2ShortCoord(req_id)
-            const nft_colour_hex = '#' + CACHED_DATABASE[req_id].toString(16)
-            const nft_colour_raw = CACHED_DATABASE[req_id].toString(16)
+            const nft_colour_hex = '#' + CACHED_DATABASE_COLOURS[req_id].toString(16)
+            const nft_colour_raw = CACHED_DATABASE_COLOURS[req_id].toString(16)
+            const nft_url = CACHED_DATABASE_URLS[req_id]
             return_data = {
                 name: "POLYPAINT.IO Block",
                 description: "A single block on the polypaint.io canvas with a changeable hex colour",
@@ -152,7 +175,8 @@ app.get("/nft/:token_id", (req, res) => {
                 attributes: {
                     colour: nft_colour_hex,
                     positionX: xypos.x,
-                    positionY: xypos.y
+                    positionY: xypos.y,
+                    link: nft_url
                 }
             }
             res.send(return_data)

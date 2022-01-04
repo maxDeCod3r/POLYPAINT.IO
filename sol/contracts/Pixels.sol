@@ -69,17 +69,20 @@ contract Pixels is ERC721, Ownable {
      }
 
     //function change pixel colour |||ERC721.ownerOf(tokenId)
-    function changePixelColour(uint256 _pixelId, bytes3 _newColour) public {
+    function changePixelColour(uint256 _pixelId, bytes3 _newColour, string memory _newURL) public {
         require(_pixelId < _totalPixels, "Pixel id out of range");
         require(ownerOf(_pixelId) == msg.sender, "Sender is not Pixel owner");
+        if (keccak256(abi.encodePacked(_pixelURL[_pixelId])) != keccak256(abi.encodePacked('/'))) {
+            _pixelURL[_pixelId] = _newURL;
+        }
         _pixelColours[_pixelId] = _newColour;
-        emit PixelColourChanged(msg.sender, _newColour, _pixelId);
+        emit PixelColourChanged(msg.sender, _newColour, _pixelId, _newURL);
     }
 
-    function changePixelColourMultiple(uint256[] memory _pixelIds, bytes3[] memory _newColours) external {
+    function changePixelColourMultiple(uint256[] memory _pixelIds, bytes3[] memory _newColours, string memory _newURL) external {
         require(_pixelIds.length == _newColours.length, "Arrays of inconsistent length");
         for (uint256 i = 0; i < _pixelIds.length; i++) {
-            changePixelColour(_pixelIds[i], _newColours[i]);
+            changePixelColour(_pixelIds[i], _newColours[i], _newURL);
         }
     }
 
