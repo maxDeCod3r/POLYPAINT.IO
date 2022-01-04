@@ -17,7 +17,7 @@ contract Pixels is ERC721, Ownable {
     mapping(uint256 => string) public _pixelURL;
 
     event PixelMinted (uint date, address indexed to, uint256 pixelId);
-    event PixelColourChanged ( address owner, bytes3 newColour, uint256 pixelId , string pixelURL);
+    event PixelColourChanged ( address owner, bytes3 newColour, uint256 pixelId , string newURL);
 
     constructor() ERC721("Pixels", "PIX") {
         _baseURIextended = "https://polypaint.io/nft/";

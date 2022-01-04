@@ -67,6 +67,7 @@ async function subscribeToTopic(web3_instance) {
         .on('data', function(event) {
             let pixelId = String(event.returnValues.pixelId)
             let newPixelColour = String(event.returnValues.newColour)
+            let newPixelURL = String(event.returnValues.newColour)
             console.log(`Got contract PixelColourChanged event. PixelId: ${pixelId}, new colour: ${newPixelColour}`);
             console.log("Updating db...");
             CACHED_DATABASE[pixelId] = newPixelColour
