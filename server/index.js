@@ -32,7 +32,7 @@ for (let i = 0; i < 1000000; i++) {
     CACHED_DATABASE_COLOURS.push(0x2C2E43)
 }
 for (let i = 0; i < 1000000; i++) {
-    CACHED_DATABASE_URLS.push("/")
+    CACHED_DATABASE_URLS.push("/#")
 }
 
 async function downloadDatabase() {
@@ -82,7 +82,7 @@ async function subscribeToTopic(web3_instance) {
             let pixelId = String(event.returnValues.pixelId)
             let newPixelColour = String(event.returnValues.newColour)
             let newPixelURL = String(event.returnValues.newURL)
-            console.log(`Got contract PixelColourChanged event. PixelId: ${pixelId}, new colour: ${newPixelColour}`);
+            console.log(`Got contract PixelColourChanged event. PixelId: ${pixelId}, new colour: ${newPixelColour}, new link: ${newPixelURL}`);
             console.log("Updating db...");
             CACHED_DATABASE_COLOURS[pixelId] = newPixelColour
             PIXEL_TABLE.update({

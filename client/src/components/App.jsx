@@ -112,16 +112,19 @@ class App extends Component {
         show_setter_modal: false,
         buy_modal_price: null,
         buy_modal_pixels: null,
+        buy_modal_link: null,
         buy_modal_colours: null,
         set_modal_pixels: null,
         set_modal_colours: null,
         contract: null,
         contractAddress: null,
+        max_link_length: 30,
         hovering_pixel: {
           id_long: 0,
           id_short: {x: 0, y:0},
           hex_colour: "#000000",
-          link: '/'
+          link: '/',
+          full_link: '/'
         }
       }
     }
@@ -181,6 +184,13 @@ class App extends Component {
     setter_modalClose() {this.setState({show_setter_modal: false})}
 
 
+    trimString(string, length) {
+      return string.length > length ?
+             string.substring(0, length) + '...' :
+             string;
+    };
+
+
     mouseOnGrid(e) {
       const rect = e.target.getBoundingClientRect();
       const elementSize = rect.right - rect.left
@@ -189,14 +199,32 @@ class App extends Component {
       const x = parseInt(x_pix_rel * 1000 / elementSize)
       const y = parseInt(y_pix_rel * 1000 / elementSize)
       const relativeIndex = (1000*y) + x
+      const full_link = this.state.raw_links[relativeIndex]
+      const hover_link = this.trimString(this.state.raw_links[relativeIndex], this.state.max_link_length)
 
       this.setState(
       {hovering_pixel: {
         id_long: relativeIndex,
         id_short: {x, y},
         hex_colour: this.state.raw_grid[relativeIndex],
-        link: this.state.raw_links[relativeIndex]
+        link: hover_link,
+        full_link: full_link
       }})
+    }
+
+    clickOnGrid(e) {
+      const rect = e.target.getBoundingClientRect();
+      const elementSize = rect.right - rect.left
+      const x_pix_rel = e.clientX - rect.left; //x position within the element.
+      const y_pix_rel = e.clientY - rect.top;  //y position within the element.
+      const x = parseInt(x_pix_rel * 1000 / elementSize)
+      const y = parseInt(y_pix_rel * 1000 / elementSize)
+      const relativeIndex = (1000*y) + x
+      const full_link = this.state.raw_links[relativeIndex]
+
+      if (full_link != '/#') {
+        window.open(full_link,'_blank');
+      }
     }
 
 
@@ -234,6 +262,11 @@ class App extends Component {
                     placeholder="Block colours(s): 0x111111,0x2222220,333333"
                     onChange={ (e)  => {this.setState({buy_modal_colours: e.target.value})}}
                     name="modalInputName"/>
+                  <input type="text"
+                    id="buy_link"
+                    placeholder="(optional) ONE link"
+                    onChange={ (e)  => {this.setState({buy_modal_link: e.target.value})}}
+                    name="modalInputName"/>
                 </div>
                 <div className="modal-button-row">
                   <button className='modal-button modal-submit' onClick={() => this.handle_buyer_submit()} type="button">Buy</button>
@@ -270,7 +303,7 @@ class App extends Component {
                   <b> Stats </b>
                   <p>Purchased blocks: { this.state.stats.purchased } < br/>
                     Available blocks: { this.state.stats.available } <br/>
-                    Block price: { this.state.stats.price } USD
+                    Block price: 0.4 MATIC
                   </p>
                 </div>
                 <div className="middle-col">
@@ -291,7 +324,7 @@ class App extends Component {
                 </div>
               </div>
               <div className = "column-separator"> </div>
-              <div className = "column column-img" onMouseMove={(e) => {this.mouseOnGrid(e)}}>
+              <div className = "column column-img" onMouseMove={(e) => {this.mouseOnGrid(e)}} onClick={(e) => {this.clickOnGrid(e)}}>
                 <img src = { `${this.state.image.source}?${this.state.image.hash}` } alt = "THE_MAP"></img>
               </div>
               <div className = "column-separator"></div>
