@@ -110,21 +110,26 @@ class App extends Component {
         selected_pixel: {pixel_id: null,pixel_x: null,pixel_y: null,pixel_color: null},
         show_buyer_modal: false,
         show_setter_modal: false,
+        show_about_modal: true,
+        // show_about_modal: false,
+        show_htu_modal: false,
         buy_modal_price: null,
         buy_modal_pixels: null,
         buy_modal_link: null,
         buy_modal_colours: null,
         set_modal_pixels: null,
         set_modal_colours: null,
+        set_modal_link: null,
         contract: null,
         contractAddress: null,
         max_link_length: 30,
+        cursor_is_pointer: false,
         hovering_pixel: {
           id_long: 0,
           id_short: {x: 0, y:0},
           hex_colour: "#000000",
-          link: '/',
-          full_link: '/'
+          link: "/#",
+          full_link: "/#"
         }
       }
     }
@@ -134,6 +139,7 @@ class App extends Component {
         const pixelContract = this.state.contract
         const pixelsToBuy = this.state.buy_modal_pixels.split(',');
         const pixelsToSet = this.state.buy_modal_colours.split(',');
+        const linkToSet = this.state.buy_modal_link
         const idArray = []
         const colorArray = []
         pixelsToBuy.forEach(pixel => {idArray.push(Number(pixel))});
@@ -141,7 +147,7 @@ class App extends Component {
         const payableAmount = this.state.buy_modal_price * 1000000000000000000
         if (idArray.length !== colorArray.length) {alert('Array lengths inconsistent')}
           console.log("Sending contract call");
-          pixelContract.methods.mintMultiple(idArray, colorArray, '/').send({from: this.state.account, value: payableAmount})
+          pixelContract.methods.mintMultiple(idArray, colorArray, linkToSet).send({from: this.state.account, value: payableAmount})
           .on('receipt', (e) => {
             console.log('receipt');
             console.log(e);
@@ -159,12 +165,13 @@ class App extends Component {
         const pixelContract = this.state.contract
         const pixelsToChange = this.state.set_modal_pixels.split(',');
         const pixelColours = this.state.set_modal_colours.split(',');
+        const pixelLink = this.state.set_modal_link
         const idArray = []
         const colorArray = []
         pixelsToChange.forEach(pixel => {idArray.push(Number(pixel))});
         pixelColours.forEach(color => {colorArray.push(color.replace(' ',''))});
         console.log("Sending contract call");
-        pixelContract.methods.changePixelColourMultiple(idArray, colorArray).send({from: this.state.account})
+        pixelContract.methods.changePixelColourMultiple(idArray, colorArray, pixelLink).send({from: this.state.account})
         .on('receipt', (e) => {
           console.log('receipt');
           console.log(e);
@@ -183,6 +190,12 @@ class App extends Component {
     buyer_modalClose() {this.setState({show_buyer_modal: false})}
     setter_modalClose() {this.setState({show_setter_modal: false})}
 
+    about_modalOpen() {this.setState({ show_about_modal: true });}
+    about_modalClose() {this.setState({ show_about_modal: false });}
+
+    htu_modalOpen() {this.setState({ show_htu_modal: true });}
+    htu_modalClose() {this.setState({ show_htu_modal: false });}
+
 
     trimString(string, length) {
       return string.length > length ?
@@ -200,7 +213,13 @@ class App extends Component {
       const y = parseInt(y_pix_rel * 1000 / elementSize)
       const relativeIndex = (1000*y) + x
       const full_link = this.state.raw_links[relativeIndex]
-      const hover_link = this.trimString(this.state.raw_links[relativeIndex], this.state.max_link_length)
+      var hover_link = "no link"
+      if (full_link === "/#") {
+        this.setState({cursor_is_pointer: false})
+      } else {
+        hover_link = this.trimString(this.state.raw_links[relativeIndex], this.state.max_link_length)
+        this.setState({cursor_is_pointer: true})
+      }
 
       this.setState(
       {hovering_pixel: {
@@ -222,7 +241,7 @@ class App extends Component {
       const relativeIndex = (1000*y) + x
       const full_link = this.state.raw_links[relativeIndex]
 
-      if (full_link != '/#') {
+      if (full_link !== '/#') {
         window.open(full_link,'_blank');
       }
     }
@@ -264,7 +283,7 @@ class App extends Component {
                     name="modalInputName"/>
                   <input type="text"
                     id="buy_link"
-                    placeholder="(optional) ONE link"
+                    placeholder="(optional) One link"
                     onChange={ (e)  => {this.setState({buy_modal_link: e.target.value})}}
                     name="modalInputName"/>
                 </div>
@@ -280,19 +299,66 @@ class App extends Component {
                 <b>Change blocks</b>
                 <div className="modal-form-group">
                   <input type="text"
-                    id="buy_block_ids"
+                    id="set_block_ids"
                     placeholder="Block id(s): 500,501,502"
                     onChange={ (e)  => {this.setState({set_modal_pixels: e.target.value})}}
                     name="modalInputName"/>
                   <input type="text"
-                    id="buy_colour_ids"
+                    id="set_colour_ids"
                     placeholder="Block colours(s): 0x111111,0x2222220,333333"
                     onChange={ (e)  => {this.setState({set_modal_colours: e.target.value})}}
+                    name="modalInputName"/>
+                  <input type="text"
+                    id="set_link"
+                    placeholder="(optional) New link"
+                    onChange={ (e)  => {this.setState({set_modal_link: e.target.value})}}
                     name="modalInputName"/>
                 </div>
                 <div className="modal-button-row">
                   <button className='modal-button modal-submit' onClick={() => this.handle_setter_submit()} type="button">Set</button>
                   <button className="modal-button modal-close" onClick={() => this.setter_modalClose()}><i className="fas fa-times"></i></button>
+                </div>
+              </div>
+          </Modal>
+
+
+          <Modal show={this.state.show_about_modal}>
+              <div className="main-modal-info">
+                <b>About</b>
+                <p>
+                Polypaint is a creative way to own a piece of the new, decentralised internet. <br/>
+                Every pixel in the 1k by 1k grid is an NFT that someone can buy and perpetually own or resell on Opensea or other platforms. <br/>
+                When buying (or once you own a polypixel), you can set a colour and link to make pixel art and allow others to navigate to your site (kinda like advertising I guess).<br/>
+                This concept project highlights the incredible advantages of the Polygon (MATIC) Level 2 blockchain with much faster transaction times and and gas fees compared to Etherium’s Level 1 solution.<br/>
+                Oh and all of this information is stored on the MATIC blockchain so other projects can simply import the decentralised data should they want to integrate a fully interactive version of this image. <br/>
+                <a href="/">View the contract on PolygonScan</a>
+                </p>
+                <div className="modal-button-row">
+                  <button className="modal-button modal-close-info" onClick={() => this.about_modalClose()}><i className="fas fa-times"></i></button>
+                </div>
+              </div>
+          </Modal>
+
+          <Modal show={this.state.show_htu_modal}>
+              <div className="main-modal-info">
+                <b>How to use</b>
+                <p>
+                For single pixels or small groups:<br/>
+                Click on Buy Blocks, and enter the desired (unowned) pixel IDs (comma separated). The pixel IDs can be seen in the Block info section when you hover over them.<br/>
+                Then, enter your desired hex colours for the pixels (comma separated) in the format of 0xcccccc (where c is your 8 bit hex colour)<br/>
+                Optionally you can set a single link for those pixels to point to<br/>
+                Finally, enter the amount you with to pay. The cost per pixel is 0.4 MATIC (though I do appreciate extras donations 😊)<br/>
+                Finally, click the buy button and confirm your transaction with Metamask.<br/>
+                NOTE: if Metamask says your transaction will fail it is likely because you are trying to buy an already owned pixel.<br/><br/>
+                For big groups and pixel art:<br/>
+                Create a pixel art PNG image in Photoshop/ Figma/ any program of your choice<br/>
+                Download the converter tool (coming soon)<br/>
+                Add your image to the converter tool, click convert and paste the output into the buy fields<br/>
+                Click buy and authorise the transaction with Metamask.<br/>
+                NOTE: if Metamask says your transaction will fail it is likely because you are trying to buy an already owned pixel
+                </p>
+                <div className="modal-button-row">
+                  <button className="modal-button modal-close-info" onClick={() => this.htu_modalClose()}><i className="fas fa-times"></i></button>
                 </div>
               </div>
           </Modal>
@@ -307,10 +373,14 @@ class App extends Component {
                   </p>
                 </div>
                 <div className="middle-col">
-                  <div className = "side-box purple-box">
+                  <div className = "side-box purple-box"
+                  onClick={() => {this.about_modalOpen()}}
+                  style={{cursor: 'pointer'}}>
                     <b> About </b>
                   </div>
-                  <div className = "side-box red-box">
+                  <div className = "side-box red-box"
+                  onClick={() => {this.htu_modalOpen()}}
+                  style={{cursor: 'pointer'}}>
                     <b> How to use </b>
                   </div>
                 </div>
@@ -325,7 +395,11 @@ class App extends Component {
               </div>
               <div className = "column-separator"> </div>
               <div className = "column column-img" onMouseMove={(e) => {this.mouseOnGrid(e)}} onClick={(e) => {this.clickOnGrid(e)}}>
-                <img src = { `${this.state.image.source}?${this.state.image.hash}` } alt = "THE_MAP"></img>
+                <img
+                src = { `${this.state.image.source}?${this.state.image.hash}` }
+                alt = "THE_MAP"
+                style = {this.state.cursor_is_pointer ? {cursor: 'pointer'} : {cursor: 'default'}}
+                ></img>
               </div>
               <div className = "column-separator"></div>
               <div className = "column">

@@ -1,13 +1,14 @@
 const express = require("express");
 const Web3 = require('web3')
 const fs = require('fs')
+const WebSocket = require("ws");
 const path = require('path')
 const PNG = require('pngjs').PNG
 const Contract = require('web3-eth-contract');
 const contract = require("./sol/abis/Pixels.json")
 const infuraUrl = `https://polygon-mumbai.infura.io/v3/${process.env.WEB3_INFURA_PROJECT_ID}`
-    // Contract.setProvider("wss://ws-mumbai.matic.today/"); // For Polygon mainnet: wss://ws-mainnet.matic.network/
-Contract.setProvider("wss://matic-testnet-archive-ws.bwarelabs.com"); // For Polygon mainnet: wss://ws-mainnet.matic.network/
+Contract.setProvider("wss://ws-mumbai.matic.today/"); // For Polygon mainnet: wss://ws-mainnet.matic.network/
+// Contract.setProvider("wss://rpc-mumbai.matic.today"); // For Polygon mainnet: wss://ws-mainnet.matic.network/
 const PORT = 3535;
 const PNG_REBUILD_INTERVAL_SECONDS = 5
 var DB_HAS_CHANGED = false
@@ -72,12 +73,12 @@ async function run_blockchain_mirror() {
 }
 
 async function subscribeToTopic(web3_instance) {
-    const currBlockNo = await web3.eth.getBlockNumber()
-    web3_instance.contract.events.PixelColourChanged({ fromBlock: 0 })
-        // web3_instance.contract.events.PixelColourChanged({ fromBlock: currBlockNo })
-        .on("connected", function(subscriptionId) {
-            console.log("Connected, subscription id:", subscriptionId);
-        })
+    let latestCheckedBlock = 0
+    let options = {
+        fromBlock: latestCheckedBlock
+    };
+
+    web3_instance.contract.events.PixelColourChanged(options)
         .on('data', function(event) {
             let pixelId = String(event.returnValues.pixelId)
             let newPixelColour = String(event.returnValues.newColour)
@@ -94,7 +95,13 @@ async function subscribeToTopic(web3_instance) {
             })
             DB_HAS_CHANGED = true
         })
+        .on('changed', (changed) => { console.log(`Changed: ${changed}`) })
+        .on('error', (err) => { console.log(`ERROR: ${err}`) })
+        .on("connected", function(subscriptionId) {
+            console.log("Connected, subscription id:", subscriptionId);
+        })
 }
+
 
 function splitArray(array, part) {
     var tmp = [];

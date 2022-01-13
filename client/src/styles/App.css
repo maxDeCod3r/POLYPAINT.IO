@@ -37,7 +37,6 @@ body {
 .column-img {
     width: 100vh;
     height: 100vh;
-    cursor: pointer;
 }
 
 .column img {
@@ -173,6 +172,23 @@ body {
     font-size: 3em;
 }
 
+.main-modal-info b {
+    font-family: 'Kanit', sans-serif;
+    font-size: 3em;
+}
+
+.main-modal-info p {
+    font-family: 'Kanit-extralight', sans-serif;
+    font-size: 1.7em;
+    text-align: left;
+}
+
+.main-modal-info a {
+    font-family: 'Kanit', sans-serif;
+    color: rgb(174, 0, 255);
+    text-align: left;
+}
+
 @media only screen and (max-width: 1000px) {
     .content-container {
         flex-direction: column;
@@ -217,5 +233,6 @@ body {
     }
     .modal-container {
         font-size: 0.5em;
+        width: 85%;
     }
 }
