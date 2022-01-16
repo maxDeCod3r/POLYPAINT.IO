@@ -9,7 +9,7 @@ const contract = require("./sol/abis/Pixels.json")
 const infuraUrl = `https://polygon-mumbai.infura.io/v3/${process.env.WEB3_INFURA_PROJECT_ID}`
 Contract.setProvider("wss://ws-mumbai.matic.today/"); // For Polygon mainnet: wss://ws-mainnet.matic.network/
 // Contract.setProvider("wss://rpc-mumbai.matic.today"); // For Polygon mainnet: wss://ws-mainnet.matic.network/
-const PORT = 3535;
+const PORT = 5000;
 const PNG_REBUILD_INTERVAL_SECONDS = 5
 var DB_HAS_CHANGED = false
 
@@ -171,20 +171,19 @@ app.get("/nft/:token_id", (req, res) => {
         const req_id = parseInt(req.params.token_id).toString()
         if (req_id < 1000000) {
             const xypos = long2ShortCoord(req_id)
-            const nft_colour_hex = '#' + CACHED_DATABASE_COLOURS[req_id].toString(16)
-            const nft_colour_raw = CACHED_DATABASE_COLOURS[req_id].toString(16)
-            const nft_url = CACHED_DATABASE_URLS[req_id]
+            const nft_colour_hex = String('#' + CACHED_DATABASE_COLOURS[req_id].toString(16))
+            const nft_url = String(CACHED_DATABASE_URLS[req_id])
             return_data = {
                 name: "POLYPAINT.IO Block",
                 description: "A single block on the polypaint.io canvas with a changeable hex colour",
                 image: "https://polypaint.io/nft_artwork.png",
-                background_color: nft_colour_raw,
-                attributes: {
-                    colour: nft_colour_hex,
-                    positionX: xypos.x,
-                    positionY: xypos.y,
-                    link: nft_url
-                }
+                external_url: "https://polypaint.io",
+                background_color: nft_colour_hex,
+                attributes: [
+                    { trait_type: "Colour", value: nft_colour_hex },
+                    { trait_type: "Position", value: `${xypos.x} x ${xypos.y}` },
+                    { trait_type: "Link", value: nft_url }
+                ]
             }
             res.send(return_data)
         } else {
