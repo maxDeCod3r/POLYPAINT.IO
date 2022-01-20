@@ -339,7 +339,7 @@ class App extends Component {
                 When buying (or once you own a polypixel), you can set a colour and link to make pixel art and allow others to navigate to your site (kinda like advertising I guess).<br/>
                 This concept project highlights the incredible advantages of the Polygon (MATIC) Level 2 blockchain with much faster transaction times and and gas fees compared to Etherium’s Level 1 solution.<br/>
                 Oh and all of this information is stored on the MATIC blockchain so other projects can simply import the decentralised data should they want to integrate a fully interactive version of this image. <br/>
-                <a href="/">View the contract on PolygonScan</a>
+                <a href="https://polygonscan.com/address/0xe46A5Cf2Ad0d993535F18BB12c4f46Fd624Ea674" target="_blank" rel="noreferrer">View the contract on PolygonScan</a>
                 </p>
                 <div className="modal-button-row">
                   <button className="modal-button modal-close-info" onClick={() => this.about_modalClose()}><i className="fas fa-times"></i></button>
