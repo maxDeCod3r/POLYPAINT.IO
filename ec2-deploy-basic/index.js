@@ -1,4 +1,5 @@
 const express = require("express");
+var morgan = require('morgan')
 const Web3 = require('web3')
 const fs = require('fs')
 const WebSocket = require("ws");
@@ -15,6 +16,7 @@ var DB_HAS_CHANGED = false
 
 const app = express();
 const web3 = new Web3(infuraUrl)
+morgan(':method :url :status :res[content-length] - :response-time ms')
 
 app.use('/', express.static(path.join(__dirname, 'build')))
 
@@ -44,7 +46,7 @@ async function downloadDatabase() {
                 CACHED_DATABASE_COLOURS[key] = parseInt(value)
             }
         }
-        console.log("Initial colour database download complete");
+        console.log("Colour database download complete");
         updatePng(true)
     });
     URL_TABLE.once("value", function(snapshot) {
@@ -54,7 +56,7 @@ async function downloadDatabase() {
                 CACHED_DATABASE_URLS[key] = parseInt(value)
             }
         }
-        console.log("Initial URL database download complete");
+        console.log("URL database download complete");
     });
 }
 
@@ -169,16 +171,18 @@ app.get("/pixel_data.links", (req, res) => {
 app.get("/nft/:token_id", (req, res) => {
     try {
         const req_id = parseInt(req.params.token_id).toString()
+        console.log(`Sending token ${req_id} metadata`);
         if (req_id < 1000000) {
             const xypos = long2ShortCoord(req_id)
             const nft_colour_hex = String('#' + CACHED_DATABASE_COLOURS[req_id].toString(16))
             const nft_url = String(CACHED_DATABASE_URLS[req_id])
             return_data = {
                 name: "POLYPAINT.IO Block",
+                tokenID: req_id,
                 description: "A single block on the polypaint.io canvas with a changeable hex colour",
                 image: "https://polypaint.io/nft_artwork.png",
+                image_url: "https://polypaint.io/nft_artwork.png",
                 external_url: "https://polypaint.io",
-                background_color: nft_colour_hex,
                 attributes: [
                     { trait_type: "Colour", value: nft_colour_hex },
                     { trait_type: "Position", value: `${xypos.x} x ${xypos.y}` },
@@ -193,6 +197,17 @@ app.get("/nft/:token_id", (req, res) => {
         console.log('error: ', e.message);
         res.send({ error: e.message })
     }
+})
+
+app.get("/contract_metadata", (req, res) => {
+    console.log("Sending contract metadata");
+    return_data = {
+        name: "Polypaint.io blocks",
+        description: "A series of blocks with settable colours that create one large image",
+        image: "https://polypaint.io/pixel_data.png",
+        external_link: "https://polypaint.io",
+    }
+    res.send(return_data)
 })
 
 app.get("/nft_artwork.png", (req, res) => {
