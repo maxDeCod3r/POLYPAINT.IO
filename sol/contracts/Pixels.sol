@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract Pixels is ERC721, Ownable {
 
-    uint256 public _gridsize = 1000; //will change to 1000 eventually.....l
+    uint256 public _gridsize = 1000; //will change to 1000 eventually.....
     uint256 public _totalPixels = _gridsize * _gridsize;
     uint256 public _pixelPrice = 400000000000000000; // approx 1usd
     string public _baseURIextended;
@@ -72,7 +72,7 @@ contract Pixels is ERC721, Ownable {
     function changePixelColour(uint256 _pixelId, bytes3 _newColour, string memory _newURL) public {
         require(_pixelId < _totalPixels, "Pixel id out of range");
         require(ownerOf(_pixelId) == msg.sender, "Sender is not Pixel owner");
-        if (keccak256(abi.encodePacked(_pixelURL[_pixelId])) != keccak256(abi.encodePacked('/'))) {
+        if (keccak256(abi.encodePacked(_pixelURL[_pixelId])) != keccak256(abi.encodePacked('/#'))) {
             _pixelURL[_pixelId] = _newURL;
         }
         _pixelColours[_pixelId] = _newColour;
@@ -115,6 +115,10 @@ contract Pixels is ERC721, Ownable {
 
     function _baseURI() internal view virtual override returns (string memory) {
         return _baseURIextended;
+    }
+
+    function contractURI() public pure returns (string memory) {
+        return "https://polypaint.io/contract_metadata";
     }
 
 }

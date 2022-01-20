@@ -172,7 +172,7 @@ app.get("/nft/:token_id", (req, res) => {
         if (req_id < 1000000) {
             const xypos = long2ShortCoord(req_id)
             const nft_colour_hex = String('#' + CACHED_DATABASE_COLOURS[req_id].toString(16))
-            const nft_url = string(CACHED_DATABASE_URLS[req_id])
+            const nft_url = String(CACHED_DATABASE_URLS[req_id])
             return_data = {
                 name: "POLYPAINT.IO Block",
                 description: "A single block on the polypaint.io canvas with a changeable hex colour",

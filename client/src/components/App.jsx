@@ -138,7 +138,13 @@ class App extends Component {
         const pixelContract = this.state.contract
         const pixelsToBuy = this.state.buy_modal_pixels.split(',');
         const pixelsToSet = this.state.buy_modal_colours.split(',');
-        const linkToSet = this.state.buy_modal_link
+        var linkToSet = this.state.buy_modal_link
+        if (!linkToSet) {
+          linkToSet = '/#'
+        }
+        console.log();
+        console.log(linkToSet);
+        console.log();
         const idArray = []
         const colorArray = []
         pixelsToBuy.forEach(pixel => {idArray.push(Number(pixel))});
@@ -164,7 +170,10 @@ class App extends Component {
         const pixelContract = this.state.contract
         const pixelsToChange = this.state.set_modal_pixels.split(',');
         const pixelColours = this.state.set_modal_colours.split(',');
-        const pixelLink = this.state.set_modal_link
+        var pixelLink = this.state.set_modal_link
+        if (!pixelLink) {
+          pixelLink = '/#'
+        }
         const idArray = []
         const colorArray = []
         pixelsToChange.forEach(pixel => {idArray.push(Number(pixel))});
@@ -282,7 +291,7 @@ class App extends Component {
                     name="modalInputName"/>
                   <input type="text"
                     id="buy_link"
-                    placeholder="(optional) One link"
+                    placeholder="(optional) New link (https://...)"
                     onChange={ (e)  => {this.setState({buy_modal_link: e.target.value})}}
                     name="modalInputName"/>
                 </div>
@@ -309,7 +318,7 @@ class App extends Component {
                     name="modalInputName"/>
                   <input type="text"
                     id="set_link"
-                    placeholder="(optional) New link"
+                    placeholder="(optional) One link (https://...)"
                     onChange={ (e)  => {this.setState({set_modal_link: e.target.value})}}
                     name="modalInputName"/>
                 </div>
