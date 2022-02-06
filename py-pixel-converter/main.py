@@ -14,13 +14,14 @@ class PhotoCtrl(wx.App):
         self.image_path = None
 
     def createWidgets(self):
-        instructions = 'Browse for an image'
+        instructions = 'Select an image'
         img = wx.EmptyImage(240,240)
         self.imageCtrl = wx.StaticBitmap(self.panel, wx.ID_ANY,
                                          wx.BitmapFromImage(img))
 
         instructLbl = wx.StaticText(self.panel, label=instructions)
-        self.photoTxt = wx.TextCtrl(self.panel, size=(200,-1))
+        self.idTxt = wx.TextCtrl(self.panel, size=(500,-1))
+        self.hexTxt = wx.TextCtrl(self.panel, size=(500,-1))
         browseBtn = wx.Button(self.panel, label='Browse')
         convertBtn = wx.Button(self.panel, label='Convert')
         browseBtn.Bind(wx.EVT_BUTTON, self.onBrowse)
@@ -28,15 +29,20 @@ class PhotoCtrl(wx.App):
 
         self.mainSizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.sizer2 = wx.BoxSizer(wx.HORIZONTAL)
+        self.sizer3 = wx.BoxSizer(wx.HORIZONTAL)
 
         self.mainSizer.Add(wx.StaticLine(self.panel, wx.ID_ANY),
                            0, wx.ALL|wx.EXPAND, 5)
         self.mainSizer.Add(instructLbl, 0, wx.ALL, 5)
         self.mainSizer.Add(self.imageCtrl, 0, wx.ALL, 5)
-        self.sizer.Add(self.photoTxt, 0, wx.ALL, 5)
+        self.sizer2.Add(self.idTxt, 0, wx.ALL, 5)
+        self.sizer3.Add(self.hexTxt, 0, wx.ALL, 5)
         self.sizer.Add(browseBtn, 0, wx.ALL, 5)
         self.sizer.Add(convertBtn, 0, wx.ALL, 5)
         self.mainSizer.Add(self.sizer, 0, wx.ALL, 5)
+        self.mainSizer.Add(self.sizer2, 0, wx.ALL, 5)
+        self.mainSizer.Add(self.sizer3, 0, wx.ALL, 5)
 
         self.panel.SetSizer(self.mainSizer)
         self.mainSizer.Fit(self.frame)
@@ -52,9 +58,9 @@ class PhotoCtrl(wx.App):
                                style=wx.FD_OPEN)
         if dialog.ShowModal() == wx.ID_OK:
             self.image_path = dialog.GetPath()
-            self.photoTxt.SetValue(self.image_path)
         dialog.Destroy()
-        self.onView()
+        if self.image_path:
+            self.onView()
 
     def onConvert(self, event):
         print('here')
@@ -79,8 +85,10 @@ class PhotoCtrl(wx.App):
                 hex = '0x%02x%02x%02x' % (pix[x,y][0], pix[x,y][1], pix[x,y][2])
                 hexArr.append(f'{hex}')
                 pixArr.append((x_start+x)+((y_start+y)*1000))
-        wx.MessageBox(f"{hexArr}", 'Hex array', wx.OK | wx.ICON_INFORMATION)
-        wx.MessageBox(f"{pixArr}", 'Pixel ID array', wx.OK | wx.ICON_INFORMATION)
+        self.idTxt.SetValue(f"{', '.join(pixArr)}")
+        self.hexTxt.SetValue(f"{', '.join(hexArr)}")
+        # wx.MessageBox(f"{hexArr}", 'Hex array', wx.OK | wx.ICON_INFORMATION)
+        # wx.MessageBox(f"{pixArr}", 'Pixel ID array', wx.OK | wx.ICON_INFORMATION)
         # print(f'{hexArr[0]}', end='')
         # for i in range(1, len(hexArr)):
         #     print(f',{hexArr[i]}', end='')
@@ -88,7 +96,9 @@ class PhotoCtrl(wx.App):
         # print(pixArr)
 
     def onView(self):
-        filepath = self.photoTxt.GetValue()
+        if not self.image_path:
+            return
+        filepath = self.image_path
         img = wx.Image(filepath, wx.BITMAP_TYPE_ANY)
         # scale the image, preserving the aspect ratio
         W = img.GetWidth()
