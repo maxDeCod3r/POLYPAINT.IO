@@ -360,7 +360,7 @@ class App extends Component {
                 NOTE: if Metamask says your transaction will fail it is likely because you are trying to buy an already owned pixel.<br/><br/>
                 For big groups and pixel art:<br/>
                 Create a pixel art PNG image in Photoshop/ Figma/ any program of your choice<br/>
-                Download the converter tool (coming soon)<br/>
+                Use the converter tool (<a href="/converter/index.html" target="_blank" rel="noreferrer">here</a>)<br/>
                 Add your image to the converter tool, click convert and paste the output into the buy fields<br/>
                 Click buy and authorise the transaction with Metamask.<br/>
                 NOTE: if Metamask says your transaction will fail it is likely because you are trying to buy an already owned pixel
