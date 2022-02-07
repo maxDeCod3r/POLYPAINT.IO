@@ -1,0 +1,137 @@
+body {
+	background-color: #85939D;
+}
+
+.container {
+    max-width: 1000px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+	justify-content: center;
+}
+
+.title {
+    font-family: 'Kanit', sans-serif;
+    font-size: min(40px, 4vw);
+    text-align: center;
+    margin-bottom: 1em;
+}
+
+.pretitle {
+    font-family: 'Kanit', sans-serif;
+    font-size: min(35px, 3.5vw);
+    text-align: center;
+	color: #3B3B3B;
+}
+
+.dropzone {
+	width: 20em;
+	height: 20em;
+	margin-left: auto;
+	margin-right: auto;
+	border: 2px dashed #CCCCCC;
+	background: #F5F5F5;
+	transition: 0.2s;
+}
+.dropzone svg{
+	position: relative;
+	left: 50%;
+	top: 40%;
+	transform: translate(-50%);
+	fill: #AAAAAA;
+}
+.dropzone.dragover {
+	border: 2px dashed #737373;
+	background-color: #AAAAAA;
+}
+.dropzone.dragover svg{
+	fill: whitesmoke;
+}
+.dropzone img {
+	position: relative;
+	width: 100%;
+	height: 100%;
+}
+
+.error-message {
+	color: darkred;
+	text-align: center;
+	font-size: 25px;
+	font-family: osl;
+	padding-bottom: 10px;
+}
+
+.parameters{
+	margin-top: 1em;
+	font-family: 'Kanit-extralight', sans-serif;
+    font-size: min(22px, 1.6vw);
+	width: 100%;
+}
+
+.parameter{
+	display: flex;
+	flex-direction: row;
+	width: 90%;
+	margin-top: 1em;
+	justify-content: center;
+}
+
+.parameter input{
+	height: 2em;
+	width: 5em;
+	font-size: min(22px, 1.6vw);
+	margin-top: 0.5em;
+	margin-left: 1em;
+	border-radius: 0.5em;
+	border: none;
+	padding-left: 0.5em;
+	background-color: #E7E7E7;
+}
+
+.button{
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.button-calculate {
+    border: none;
+    padding: 0.3em;
+    background: linear-gradient(313deg, rgba(170, 162, 255, 1) 0%, rgba(195, 156, 251, 1) 40%, rgba(188, 170, 251, 1) 51%, rgba(156, 234, 252, 1) 96%);
+    color: white;
+	margin: 1em;
+    margin-top: 1em;
+    padding: 0.2em;
+    width: 7em;
+    font-size: 3em;
+    font-family: 'Kanit', sans-serif;
+    border-radius: 50px;
+    font-size: min(25px, 3vw);
+	cursor: pointer;
+	transition: 0.7s;
+}
+
+.button-calculate:hover{
+	transition: 0.7s;
+    background: rgb(114, 170, 114);
+
+}
+
+.output {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.output input{
+	width: 90%;
+	font-size: min(16px, 1.2vw);
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 0.75em;
+	border: none;
+	border-radius: 0.3em;
+	height: 1.7em;
+	background-color: #E7E7E7;
+	padding-left: 0.7em;
+}
