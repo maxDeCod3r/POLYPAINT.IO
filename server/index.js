@@ -8,7 +8,8 @@ const PNG = require('pngjs').PNG
 const Contract = require('web3-eth-contract');
 const contract = require("./sol/abis/Pixels.json")
 const infuraUrl = `https://polygon-mainnet.infura.io/v3/${process.env.WEB3_INFURA_PROJECT_ID}`
-Contract.setProvider("wss://speedy-nodes-nyc.moralis.io/a5c1fd40cd6a7ab66795f7c3/polygon/mainnet/ws");
+Contract.setProvider("wss://speedy-nodes-nyc.moralis.io/a5c1fd40cd6a7ab66795f7c3/polygon/mainnet/ws"); //works sometimes
+// Contract.setProvider("wss://speedy-nodes-nyc.moralis.io/a5c1fd40cd6a7ab66795f7c3/polygon/mainnet/archive/ws");
 const PORT = 5000;
 const PNG_REBUILD_INTERVAL_SECONDS = 5
 var DB_HAS_CHANGED = false
@@ -52,7 +53,7 @@ async function downloadDatabase() {
         var downloadedArray = snapshot.val()
         for (const [key, value] of Object.entries(downloadedArray)) {
             if (key >= 0) {
-                CACHED_DATABASE_URLS[key] = parseInt(value)
+                CACHED_DATABASE_URLS[key] = value
             }
         }
         console.log("URL database download complete");
@@ -74,7 +75,7 @@ async function run_blockchain_mirror() {
 }
 
 async function subscribeToTopic(web3_instance) {
-    let latestCheckedBlock = 0
+    let latestCheckedBlock = 23964045
     let options = {
         fromBlock: latestCheckedBlock
     };
