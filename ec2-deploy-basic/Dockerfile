@@ -9,11 +9,11 @@ EXPOSE 8081
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 
 RUN npm install
-RUN npm install pm2 -g
+RUN npm install pm2 --location=global
 
 RUN source secrets/.env
 
-CMD ["pm2-runtime", "server.js"]
+CMD ["pm2-runtime", "index.js"]
 
 # ENTRYPOINT [ "node", "index.js" ]
 # ENTRYPOINT [ "gunicorn", "--bind", "0.0.0.0:8080", "server:app" ]
