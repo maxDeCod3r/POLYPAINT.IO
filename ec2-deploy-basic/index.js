@@ -7,8 +7,9 @@ const path = require('path')
 const PNG = require('pngjs').PNG
 const Contract = require('web3-eth-contract');
 const contract = require("./sol/abis/Pixels.json")
-const infuraUrl = `https://polygon-mumbai.infura.io/v3/${process.env.WEB3_INFURA_PROJECT_ID}`
-Contract.setProvider("wss://ws-mumbai.matic.today/"); // For Polygon mainnet: wss://ws-mainnet.matic.network/
+const infuraUrl = `https://polygon-mainnet.infura.io/v3/${process.env.WEB3_INFURA_PROJECT_ID}`
+// const infuraUrl = "https://polygon-mainnet.infura.io/v3/"
+Contract.setProvider("wss://ws-mainnet.matic.network/"); // For Polygon mainnet: wss://ws-mainnet.matic.network/ For Polygon mumbai: wss://ws-mumbai.matic.network/
 // Contract.setProvider("wss://rpc-mumbai.matic.today"); // For Polygon mainnet: wss://ws-mainnet.matic.network/
 const PORT = 5000;
 const PNG_REBUILD_INTERVAL_SECONDS = 5
