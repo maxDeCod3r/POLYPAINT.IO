@@ -1,6 +1,6 @@
 FROM node:16.15.1-buster-slim
 ADD . .
-EXPOSE 8080
+EXPOSE 8081
 RUN npm install package.json
 RUN source secrets/.env
 ENTRYPOINT [ "node", "index.js" ]
