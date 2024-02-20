@@ -1,4 +1,4 @@
-FROM node:latest
+FROM node:16.15.1-buster-slim
 ADD . .
 EXPOSE 8080
 RUN npm install
