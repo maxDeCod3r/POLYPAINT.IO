@@ -11,7 +11,7 @@ const infuraUrl = `https://polygon-mainnet.infura.io/v3/${process.env.WEB3_INFUR
 // const infuraUrl = "https://polygon-mainnet.infura.io/v3/"
 Contract.setProvider("wss://ws-mainnet.matic.network/"); // For Polygon mainnet: wss://ws-mainnet.matic.network/ For Polygon mumbai: wss://ws-mumbai.matic.network/
 // Contract.setProvider("wss://rpc-mumbai.matic.today"); // For Polygon mainnet: wss://ws-mainnet.matic.network/
-const PORT = 5000;
+const PORT = 8081;
 const PNG_REBUILD_INTERVAL_SECONDS = 5
 var DB_HAS_CHANGED = false
 
